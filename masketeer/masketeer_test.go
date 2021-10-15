@@ -2,7 +2,7 @@ package masketeer
 
 import "testing"
 
-func TestMasketer_Email(t *testing.T) {
+func TestMasketeer_Email(t *testing.T) {
 	type args struct {
 		eml string
 	}
@@ -25,7 +25,7 @@ func TestMasketer_Email(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			m := New(tt.opt)
 			if got := m.Email(tt.args.eml); got != tt.want {
-				t.Errorf("Masketer.Email() = %v, want %v", got, tt.want)
+				t.Errorf("Masketeer.Email() = %v, want %v", got, tt.want)
 			}
 		})
 	}
