@@ -21,6 +21,14 @@ func TestMask(t *testing.T) {
 			want: "tes...@example.com",
 		},
 		{
+			name: "with spaces to trim",
+			args: args{
+				email: "   test@example.com\n\t",
+				opt:   nil,
+			},
+			want: "tes...@example.com",
+		},
+		{
 			name: "single word on prefix",
 			args: args{
 				email: "a@example.com",
@@ -66,7 +74,7 @@ func TestMask(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := Mask(tt.args.email, tt.args.opt); got != tt.want {
-				t.Errorf("Mask() = %v, want %v", got, tt.want)
+				t.Errorf("Mask() = \"%v\", want \"%v\"", got, tt.want)
 			}
 		})
 	}

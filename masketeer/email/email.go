@@ -19,7 +19,7 @@ type Option struct {
 */
 func Mask(email string, opt *Option) string {
 	opt = getDefault(opt)
-
+	email = strings.TrimSpace(email)
 	if idx := strings.Index(email, "@"); idx > 0 {
 		prefix := email[0:idx]
 
