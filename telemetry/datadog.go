@@ -10,6 +10,9 @@ import (
 
 const DataDogConfigPrefix = "DD_"
 
+// Verify interface compliance
+var _ Tracer = (*DataDog)(nil)
+
 type DataDog struct{}
 
 type DataDogConfig struct {

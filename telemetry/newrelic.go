@@ -7,6 +7,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// Verify interface compliance
+var _ Tracer = (*NewRelic)(nil)
+
 type NewRelic struct {
 	app *newrelic.Application
 }
@@ -43,4 +46,7 @@ func (NewRelic) Client(parent *http.Client) *http.Client {
 	}
 	parent.Transport = newrelic.NewRoundTripper(parent.Transport)
 	return parent
+}
+
+func (NewRelic) Close() {
 }
