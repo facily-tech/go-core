@@ -54,7 +54,7 @@ func TestLoadEnv(t *testing.T) {
 					if k != "BIND" {
 						return v, nil
 					}
-					if strings.Index(v, ":") == -1 {
+					if !strings.Contains(v, ":") {
 						v = ":" + v
 					}
 					return v, nil
