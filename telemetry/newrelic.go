@@ -1,6 +1,7 @@
 package telemetry
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
@@ -8,7 +9,10 @@ import (
 )
 
 // Verify interface compliance
+// On Hold New Relic implementation will
 var _ Tracer = (*NewRelic)(nil)
+
+const NewRelicName Name = "newrelic"
 
 type NewRelic struct {
 	app *newrelic.Application
@@ -49,4 +53,12 @@ func (NewRelic) Client(parent *http.Client) *http.Client {
 }
 
 func (NewRelic) Close() {
+}
+
+func (NewRelic) Name() Name {
+	return NewRelicName
+}
+
+func (NewRelic) SpanFromContext(ctx context.Context) (Span, bool) {
+	return nil, false
 }

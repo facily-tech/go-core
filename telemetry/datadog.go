@@ -1,6 +1,7 @@
 package telemetry
 
 import (
+	"context"
 	"net/http"
 
 	ddchi "gopkg.in/DataDog/dd-trace-go.v1/contrib/go-chi/chi.v5"
@@ -9,6 +10,7 @@ import (
 )
 
 const DataDogConfigPrefix = "DD_"
+const DataDogName Name = "datadog"
 
 // Verify interface compliance
 var _ Tracer = (*DataDog)(nil)
@@ -17,7 +19,7 @@ type DataDog struct{}
 
 type DataDogConfig struct {
 	Env     string `env:"ENV,required"`
-	Service string `env:"SERVICE,default=core-commerce-erp-integration"`
+	Service string `env:"SERVICE,required"`
 	Version string
 }
 
@@ -41,4 +43,25 @@ func (DataDog) Close() {
 
 func (DataDog) Client(parent *http.Client) *http.Client {
 	return ddhttp.WrapClient(parent)
+}
+
+func (DataDog) Name() Name {
+	return DataDogName
+}
+
+func (DataDog) SpanFromContext(ctx context.Context) (Span, bool) {
+	rawSpan, ok := tracer.SpanFromContext(ctx)
+
+	if !ok {
+		return nil, false
+	}
+
+	rawContext := rawSpan.Context()
+
+	return &ddSpan{
+		context: ddSpanContext{
+			traceID: rawContext.TraceID(),
+			spanID:  rawContext.SpanID(),
+		},
+	}, true
 }
