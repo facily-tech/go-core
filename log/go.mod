@@ -1,4 +1,4 @@
-module github.com/facily-tech/go-core/logger
+module github.com/facily-tech/go-core/log
 
 go 1.17
 

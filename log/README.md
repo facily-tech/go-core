@@ -1,11 +1,10 @@
-# Logger
+# Log
 
-Logger is a abstraction of logs.
 
 ## Installation
 
 ```go
-go get github.com/facily-tech/go-core/logger
+go get github.com/facily-tech/go-core/log
 ```
 
 ## Usage
