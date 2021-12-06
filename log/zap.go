@@ -47,7 +47,7 @@ func NewLoggerZap(config ZapConfig) (*Zap, error) {
 // fieldsToZap convert Fields ([]Field) to []zap.Field.
 // and enbed span trace from context
 func fieldsToZap(ctx context.Context, tracer telemetry.Tracer, fs []Field) []zap.Field {
-	zapFields := make([]zap.Field, len(fs)+1)
+	zapFields := make([]zap.Field, len(fs), len(fs)+1)
 
 	for i := range fs {
 		zapFields[i] = zap.Any(fs[i].Key, fs[i].Value)
