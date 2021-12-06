@@ -4,7 +4,7 @@ lint:
 
 .PHONY: test
 test:
-	@go test ./... -race -covermode=atomic -coverprofile=coverage.out
+	@go test ./... -coverpkg ./... -race -covermode=atomic -coverprofile=coverage.out
 
 .PHONY: generate
 generate: build-dep
