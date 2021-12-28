@@ -25,6 +25,8 @@ github.com/facily-tech/go-core/log v0.1.0 h1:4YJ5W14s4Mx/HwW3XWRwF0HntJtLbO4GQXv
 github.com/facily-tech/go-core/log v0.1.0/go.mod h1:WYVdsRqcYBb4v49E8wRFX58Z72t5wWIYatp4i7sty24=
 github.com/facily-tech/go-core/telemetry v0.3.0 h1:KcIVfB0mjuQnpWL4MQV1taU+tW64RyygpEVDfnmckY4=
 github.com/facily-tech/go-core/telemetry v0.3.0/go.mod h1:Qnuu0FQynT5cHIgferYfuPr08cPtUL5JXfFWrjZi2UU=
+github.com/go-chi/chi v1.5.4 h1:QHdzF2szwjqVV4wmByUnTcsbIg7UGaQ0tPF2t5GcAIs=
+github.com/go-chi/chi v1.5.4/go.mod h1:uaf8YgoFazUOkPBG7fxPftUylNumIev9awIWOENIuEg=
 github.com/go-chi/chi/v5 v5.0.7 h1:rDTPXLDHGATaeHvVlLcR4Qe0zftYethFucbjVQ1PxU8=
 github.com/go-chi/chi/v5 v5.0.7/go.mod h1:DslCQbL2OYiznFReuXYUmQ2hGd1aDpCnlMNITLSKoi8=
 github.com/golang/glog v0.0.0-20160126235308-23def4e6c14b h1:VKtxabqXZkF25pY9ekfRL6a582T4P37/31XEstQ5p58=
