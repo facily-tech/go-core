@@ -1,3 +1,7 @@
 .PHONY: test
 test:
-	./test.sh
+	./iterate.sh "test"
+
+.PHONY: lint
+lint:
+	./iterate.sh "lint"

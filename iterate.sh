@@ -1,5 +1,12 @@
 #!/bin/bash
-set -e
+
+#
+# Iterate over file running make $command
+#
+
+set -e # stop if error
+
+command=$1
 
 ROOT_DIR=$(cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd)
 
@@ -8,9 +15,9 @@ do
     multirepo="$ROOT_DIR/$dir"
     if [ -f "$multirepo/Makefile" ]; then
         cd $multirepo 1>/dev/null
-        make test
+        bash -c "make $command"
     else
-        echo "WARNING: could not call tests from subrepo "$dir" with make test"
+        echo "WARNING: Makefile not found from subrepo "$dir""
     fi
 done
 

@@ -32,7 +32,6 @@ func testRequest(ctx context.Context, t *testing.T, ts *httptest.Server, method,
 		t.Fatal(err)
 		return nil, ""
 	}
-	defer resp.Body.Close()
 
 	return resp, string(respBody)
 }
@@ -62,5 +61,7 @@ func TestRecoverer(t *testing.T) {
 	defer ts.Close()
 
 	res, _ := testRequest(ctx, t, ts, "GET", "/", nil)
+	defer res.Body.Close()
+
 	assert.Equal(t, res.StatusCode, http.StatusInternalServerError)
 }

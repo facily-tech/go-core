@@ -8,7 +8,7 @@ import (
 )
 
 // Example of usage
-func ExampleOfUsage() {
+func Example_ofUsage() {
 	// Manuall setting the env environment variable to make test works
 	os.Setenv("HOST", "0.0.0.0:8080")
 
@@ -34,10 +34,9 @@ func ExampleOfUsage() {
 	// Host: 0.0.0.0:8080
 	// Timeout: 10s
 	//
-
 }
 
-func ExampleOfUsageWithPrefix() {
+func Example_ofUsageWithPrefix() {
 	// Manuall setting the env environment variable to make test works
 	os.Setenv("HTTP_HOST", "0.0.0.0:8080")
 	os.Setenv("HTTP_TIMEOUT", "5s") // this overrides it's default value
@@ -64,10 +63,9 @@ func ExampleOfUsageWithPrefix() {
 	// Host: 0.0.0.0:8080
 	// Timeout: 5s
 	//
-
 }
 
-func ExampleOfMissingParameters() {
+func Example_ofMissingParameters() {
 	// Example of usage start below.
 	ctx := context.Background()
 
