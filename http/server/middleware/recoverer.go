@@ -9,6 +9,7 @@ import (
 
 const panicErrorRecovered string = "panic recovered on middleware recoverer"
 
+// Recoverer middleware recover panic if it hapens into a request avoiding the application stop due uncacthed panic.
 func Recoverer(logger log.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		fn := func(w http.ResponseWriter, r *http.Request) {
@@ -24,6 +25,7 @@ func Recoverer(logger log.Logger) func(next http.Handler) http.Handler {
 			}()
 			next.ServeHTTP(w, r)
 		}
+
 		return http.HandlerFunc(fn)
 	}
 }

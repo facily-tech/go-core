@@ -1,3 +1,6 @@
+/*
+Package server is the package responsible for http server
+*/
 package server
 
 import (
@@ -14,20 +17,23 @@ import (
 	"github.com/facily-tech/go-core/types"
 )
 
+// PrefixConfig is the environment prefix ex: HOST_PORT will be added API_ as prefix.
 const PrefixConfig = "API_"
 
+// Config is the API Server Configuration.
 type Config struct {
 	Addr             string        `env:"HOST_PORT,required"`
 	GracefulDuration time.Duration `env:"GRACEFUL_WAIT_TIME,required"`
 }
 
+// Run the server http.
 func Run(ctx context.Context, cnf Config, handler http.Handler, log ilog.Logger) {
 	server := &http.Server{Addr: cnf.Addr, Handler: handler}
 
-	// Server run context
+	// Server run context.
 	serverCtx, serverStopCtx := context.WithCancel(ctx)
 
-	// Listen for syscall signals for process to interrupt/quit
+	// Listen for syscall signals for process to interrupt/quit.
 	sig := make(chan os.Signal, 1)
 	signal.Notify(sig, syscall.SIGHUP, syscall.SIGINT, syscall.SIGTERM, syscall.SIGQUIT)
 	go func() {

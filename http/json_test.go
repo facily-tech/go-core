@@ -61,7 +61,9 @@ func TestToJSON(t *testing.T) {
 			r := tt.args.w.Result()
 			assert.Equal(t, tt.want, tt.args.w.Body.String())
 			assert.Equal(t, tt.wantCode, r.StatusCode)
-			r.Body.Close()
+			if err := r.Body.Close(); err != nil {
+				t.Error(err)
+			}
 		})
 	}
 }
@@ -109,7 +111,8 @@ func TestFromJSON(t *testing.T) {
 			},
 			want:    outtesting{Key: ""},
 			wantErr: true,
-		}, {
+		},
+		{
 			name: "fail, invalid json",
 			args: args{
 				logger: zap,

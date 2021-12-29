@@ -86,6 +86,7 @@ func statusLevel(logger log.Logger, status int) func(ctx context.Context, msg st
 	}
 }
 
+// Logger middleware is a middleware to log everything request that was receved by API.
 func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

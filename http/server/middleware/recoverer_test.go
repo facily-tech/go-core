@@ -15,21 +15,25 @@ import (
 )
 
 func testRequest(ctx context.Context, t *testing.T, ts *httptest.Server, method, path string, body io.Reader) (*http.Response, string) {
+	t.Helper()
 	req, err := http.NewRequestWithContext(ctx, method, ts.URL+path, body)
 	if err != nil {
 		t.Fatal(err)
+
 		return nil, ""
 	}
 
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
 		t.Fatal(err)
+
 		return nil, ""
 	}
 
 	respBody, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		t.Fatal(err)
+
 		return nil, ""
 	}
 
@@ -61,7 +65,11 @@ func TestRecoverer(t *testing.T) {
 	defer ts.Close()
 
 	res, _ := testRequest(ctx, t, ts, "GET", "/", nil)
-	defer res.Body.Close()
+	defer func() {
+		if err := res.Body.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
 
 	assert.Equal(t, res.StatusCode, http.StatusInternalServerError)
 }
