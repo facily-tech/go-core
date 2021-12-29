@@ -1,4 +1,4 @@
-name: Test
+name: Testing Subrepos
 on:
   ["pull_request"]
 
@@ -12,5 +12,5 @@ jobs:
       uses: actions/setup-go@v2
       with:
         go-version: '1.17.3'
-    - name: Test
+    - name: Running Test
       run: make test
