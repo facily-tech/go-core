@@ -1,6 +1,9 @@
 
 name: golangci-lint
-on: [push]
+on:
+  push:
+    branches: 
+      - main
 
 jobs:
   golangci:
@@ -9,7 +12,3 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: golangci-lint
-        uses: golangci/golangci-lint-action@v2
-        with:
-          version: latest
-          only-new-issues: true
