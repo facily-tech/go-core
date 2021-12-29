@@ -1,3 +1,6 @@
+/*
+Package telemetry is responsible to handle telemetry usage.
+*/
 package telemetry
 
 import (
@@ -5,6 +8,7 @@ import (
 	"net/http"
 )
 
+// Name is a string type to hold the name of Tracer implemantation.
 type Name string
 
 // A Tracer has methods to help tracer instrumentation of our services.
@@ -21,10 +25,12 @@ type Tracer interface {
 	SpanFromContext(ctx context.Context) (Span, bool)
 }
 
+// Span interface handle span usage.
 type Span interface {
 	Context() SpanContext
 }
 
+// SpanContext handle spans in context.
 type SpanContext interface {
 	// SpanID Return the SpanID
 	SpanID() uint64
