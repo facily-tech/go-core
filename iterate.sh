@@ -14,7 +14,7 @@ for dir in ./*/
 do 
     multirepo="$ROOT_DIR/$dir"
     if [ -f "$multirepo/Makefile" ]; then
-        cd $multirepo 1>/dev/null
+        cd $multirepo
         bash -c "make $command"
     else
         echo "WARNING: Makefile not found from subrepo "$dir""
