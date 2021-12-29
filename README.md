@@ -37,5 +37,5 @@ ln -s ../.golangci.yml .
 
 ### Lint troubleshooting
 
-* File is not `gci`-ed (gci): install (gci)[https://github.com/daixiang0/gci] and run: `gci -w FILE_WITH_PROBLEM`
-* File is not `gofumpt`-ed (gofumpt): install (gofumpt)[https://github.com/mvdan/gofumpt] and run : `gofumpt -w FILE_WITH_PROBLEM`
+* File is not `gci`-ed (gci): install [gci](https://github.com/daixiang0/gci) and run: `gci -w FILE_WITH_PROBLEM`
+* File is not `gofumpt`-ed (gofumpt): install [gofumpt](https://github.com/mvdan/gofumpt) and run : `gofumpt -w FILE_WITH_PROBLEM`
