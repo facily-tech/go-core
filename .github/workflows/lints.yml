@@ -1,9 +1,7 @@
 
 name: golangci-lint
 on:
-  push:
-    branches: 
-      - main
+  ["push", "pull_request"]
 
 jobs:
   golangci:
@@ -12,3 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: golangci-lint
+        run: |-
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.43.0
+          mv ./bin/golangci-lint ./
+          make lint
