@@ -24,3 +24,18 @@ $ git push --tags
 ```sh
 go get github.com/facily-tech/go-core/MODULE-NAME
 ```
+
+## Lint
+
+Crate a link to .golanci.yml from project root folder to our subproject.
+Something like this:
+
+```sh
+cd MY_REPO_ROCKS
+ln -s ../.golangci.yml .
+```
+
+### Lint troubleshooting
+
+* File is not `gci`-ed (gci): install [gci](https://github.com/daixiang0/gci) and run: `gci -w FILE_WITH_PROBLEM`
+* File is not `gofumpt`-ed (gofumpt): install [gofumpt](https://github.com/mvdan/gofumpt) and run : `gofumpt -w FILE_WITH_PROBLEM`

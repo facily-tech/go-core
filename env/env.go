@@ -22,5 +22,6 @@ func LoadEnv(ctx context.Context, dst interface{}, prefix string, mutators ...Mu
 	if err := envconfig.ProcessWith(ctx, dst, l, envconfigMutators...); err != nil {
 		return errors.Wrap(err, "error while creating config from environment")
 	}
+
 	return nil
 }

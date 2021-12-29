@@ -35,6 +35,7 @@ func Test_fieldsToZap(t *testing.T) {
 			want: func() []zap.Field {
 				zapFields := make([]zap.Field, 1)
 				zapFields[0] = zap.Any("foo", "boo")
+
 				return zapFields
 			}(),
 		},
