@@ -28,6 +28,12 @@ go get github.com/facily-tech/go-core/MODULE-NAME
 ## Lint
 
 Crate a link to .golanci.yml from project root folder to our subproject.
+Something like this:
+
+```sh
+cd MY_REPO_ROCKS
+ln -s ../.golangci.yml .
+```
 
 ### Lint troubleshooting
 
