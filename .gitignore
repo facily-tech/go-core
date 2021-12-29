@@ -13,3 +13,6 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+# bin is a protected folder, should not be versioned
+bin/ 
