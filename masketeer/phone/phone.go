@@ -4,6 +4,7 @@ import (
 	"strings"
 )
 
+// Option is the options of masked used to mask phone.
 type Option struct {
 	NumberOfVisibleCharsOnSufix int
 
@@ -13,6 +14,7 @@ type Option struct {
 	UseAsVisibleChars string
 }
 
+// Mask a phone number with the option given or default parameters.
 func Mask(phone string, opt *Option) string {
 	opt = getDefault(opt)
 	phone = strings.TrimSpace(phone)
