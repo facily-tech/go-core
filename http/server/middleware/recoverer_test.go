@@ -32,6 +32,7 @@ func testRequest(ctx context.Context, t *testing.T, ts *httptest.Server, method,
 		t.Fatal(err)
 		return nil, ""
 	}
+	defer resp.Body.Close()
 
 	return resp, string(respBody)
 }
@@ -48,20 +49,18 @@ func TestRecoverer(t *testing.T) {
 
 	mockLogger := log.NewMockLogger(mockCtrl)
 	mockLogger.EXPECT().Error(
-		gomock.AssignableToTypeOf(ctx),
+		gomock.Not(gomock.Nil()),
 		panicErrorRecovered,
 		gomock.Not(gomock.Nil()),
-	)
+	).Times(1)
 
 	r := chi.NewRouter()
-	r.Use(Recoverer(ctx, mockLogger))
+	r.Use(Recoverer(mockLogger))
 	r.Get("/", panicingHandler)
 
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
 	res, _ := testRequest(ctx, t, ts, "GET", "/", nil)
-	defer res.Body.Close()
-
 	assert.Equal(t, res.StatusCode, http.StatusInternalServerError)
 }
