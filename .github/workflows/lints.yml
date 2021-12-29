@@ -11,13 +11,9 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install Golang lint CI
         run: |-
-          mkdir -p $GITHUB_WORKSPACE/bin
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.43.0
           echo "${GITHUB_WORKSPACE}/bin" >> $GITHUB_PATH
 
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s v1.43.0
-
-          mv ./bin/* $GITHUB_WORKSPACE/bin/
-          rm -fR ./bin
       - name: Run GolangCi Lint
         run: |-
           make lint          
