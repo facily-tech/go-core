@@ -1,5 +1,5 @@
 
-name: golangci-lint
+name: Golangci-lint
 on:
   ["pull_request"]
 
