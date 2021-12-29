@@ -2,19 +2,23 @@ package log
 
 import "context"
 
+// Field is the way the parameters is received by logger.
 type Field struct {
 	Key   string
 	Value interface{}
 }
 
+// Any receive any value to be add into logger.
 func Any(key string, value interface{}) Field {
 	return Field{key, value}
 }
 
+// Error handle errors to be given to looger function.
 func Error(value error) Field {
 	return Field{"error", value}
 }
 
+// Fields are the slice of fields that are handled internaly by logger function.
 type Fields struct {
 	CTX    context.Context
 	Fields []Field

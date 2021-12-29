@@ -11,7 +11,6 @@ func ExampleNewLoggerZap() {
 		Version:           "v0.1.0",
 		DisableStackTrace: false,
 	})
-
 	if err != nil {
 		// panic should not be used outside func main
 		// but it is not possible to return on it tests
@@ -38,7 +37,6 @@ func ExampleNewLoggerZap_withTracing() {
 		DisableStackTrace: false,
 		Tracer:            tracer,
 	})
-
 	if err != nil {
 		// panic should not be used outside func main
 		// but it is not possible to return on it tests

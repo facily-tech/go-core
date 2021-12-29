@@ -3,10 +3,10 @@ package log
 import (
 	"context"
 
+	"github.com/facily-tech/go-core/telemetry"
+	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-
-	"github.com/facily-tech/go-core/telemetry"
 )
 
 var _ Logger = (*Zap)(nil)
@@ -17,6 +17,7 @@ type Zap struct {
 	tracer telemetry.Tracer
 }
 
+// ZapConfig handle the config information that will be passed to zap.
 type ZapConfig struct {
 	Version           string
 	DisableStackTrace bool
@@ -35,7 +36,7 @@ func NewLoggerZap(config ZapConfig) (*Zap, error) {
 
 	logger, err := loggerConfig.Build(zap.AddCallerSkip(1))
 	if err != nil {
-		return nil, err
+		return nil, errors.Wrap(err, "error on building zap logger")
 	}
 
 	return &Zap{
@@ -45,7 +46,7 @@ func NewLoggerZap(config ZapConfig) (*Zap, error) {
 }
 
 // fieldsToZap convert Fields ([]Field) to []zap.Field.
-// and enbed span trace from context
+// and enbed span trace from context.
 func fieldsToZap(ctx context.Context, tracer telemetry.Tracer, fs []Field) []zap.Field {
 	zapFields := make([]zap.Field, len(fs), len(fs)+1)
 
@@ -63,26 +64,32 @@ func fieldsToZap(ctx context.Context, tracer telemetry.Tracer, fs []Field) []zap
 	return zapFields
 }
 
+// Debug will write a log with level debug.
 func (z *Zap) Debug(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Debug(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
 
+// Error will write a log with level error.
 func (z *Zap) Error(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Error(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
 
+// Fatal will write a log with level fatal.
 func (z *Zap) Fatal(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Fatal(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
 
+// Info will write a log with level info.
 func (z *Zap) Info(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Info(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
 
+// Panic will write a log with level panic.
 func (z *Zap) Panic(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Panic(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
 
+// Warn will write a log with level warn.
 func (z *Zap) Warn(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Warn(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
