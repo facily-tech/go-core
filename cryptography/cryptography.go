@@ -27,7 +27,7 @@ func NewCryptography(key []byte, nonce []byte) *Cryptography {
 	return &Cryptography{key: key, nonce: nonce}
 }
 
-// Encrypt returns a encr struct
+// Encrypt will encrypt a plaintext.
 func (s *Cryptography) Encrypt(plainText string) (string, error) {
 	block, err := aes.NewCipher(s.key)
 	if err != nil {
@@ -42,6 +42,7 @@ func (s *Cryptography) Encrypt(plainText string) (string, error) {
 	return hex.EncodeToString(ciphertext), nil
 }
 
+// Decrypt will decrypt a ciphertext previously encrypted .
 func (s *Cryptography) Decrypt(ciphertext string) (string, error) {
 	plainText, err := hex.DecodeString(ciphertext)
 	if err != nil {
