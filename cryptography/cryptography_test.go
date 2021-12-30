@@ -26,5 +26,4 @@ func TestEncryptDecrypt(t *testing.T) {
 	assert.Nil(t, err)
 
 	assert.Equal(t, telefone, decrypt)
-
 }

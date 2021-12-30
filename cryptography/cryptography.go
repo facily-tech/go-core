@@ -29,7 +29,6 @@ type Cryptography struct {
 
 // NewCryptography returns a new Cryptography struct.
 func NewCryptography(key []byte, nonce []byte) *Cryptography {
-
 	return &Cryptography{key: key, nonce: nonce}
 }
 
@@ -54,22 +53,18 @@ func (s *Cryptography) Encrypt(plainText string) (string, error) {
 func (s *Cryptography) Decrypt(ciphertext string) (string, error) {
 	plainText, err := hex.DecodeString(ciphertext)
 	if err != nil {
-
 		return "", errors.Wrap(err, "error on decodeString to a byte value")
 	}
 	block, err := aes.NewCipher(s.key)
 	if err != nil {
-
 		return "", errors.Wrap(err, "can't initialize NewCipher")
 	}
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-
 		return "", errors.Wrap(err, "can't initialize NewGCM")
 	}
 	decrypt, err := aesgcm.Open(nil, s.nonce, plainText, nil)
 	if err != nil {
-
 		return "", errors.Wrap(err, "can't decrypt ciphertext")
 	}
 
