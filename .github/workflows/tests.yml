@@ -1,0 +1,16 @@
+name: Testing Subrepos
+on:
+  ["pull_request"]
+
+jobs:
+  test:
+    name: tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Go
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.17.3'
+    - name: Running Test
+      run: make test

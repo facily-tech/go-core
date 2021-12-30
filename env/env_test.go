@@ -2,6 +2,7 @@ package env
 
 import (
 	"context"
+	"log"
 	"os"
 	"reflect"
 	"strings"
@@ -39,7 +40,9 @@ func TestLoadEnv(t *testing.T) {
 				Timeout: 10 * time.Second,
 			},
 			setup: func() {
-				os.Setenv("HTTP_BIND", "0.0.0.0:8080")
+				if err := os.Setenv("HTTP_BIND", "0.0.0.0:8080"); err != nil {
+					log.Fatal(err)
+				}
 			},
 			wantErr: false,
 		},
@@ -57,6 +60,7 @@ func TestLoadEnv(t *testing.T) {
 					if !strings.Contains(v, ":") {
 						v = ":" + v
 					}
+
 					return v, nil
 				}},
 			},
@@ -65,7 +69,9 @@ func TestLoadEnv(t *testing.T) {
 				Timeout: 10 * time.Second,
 			},
 			setup: func() {
-				os.Setenv("HTTP_BIND", "8080")
+				if err := os.Setenv("HTTP_BIND", "8080"); err != nil {
+					log.Fatal(err)
+				}
 			},
 			wantErr: false,
 		},
@@ -81,8 +87,12 @@ func TestLoadEnv(t *testing.T) {
 				Timeout: 60 * time.Second,
 			},
 			setup: func() {
-				os.Setenv("HTTP_BIND", ":8080")
-				os.Setenv("HTTP_TIMEOUT", "60s")
+				if err := os.Setenv("HTTP_BIND", ":8080"); err != nil {
+					log.Fatal(err)
+				}
+				if err := os.Setenv("HTTP_TIMEOUT", "60s"); err != nil {
+					log.Fatal(err)
+				}
 			},
 			wantErr: false,
 		},
@@ -98,7 +108,9 @@ func TestLoadEnv(t *testing.T) {
 				Timeout: 10 * time.Second,
 			},
 			setup: func() {
-				os.Setenv("BIND", ":8080")
+				if err := os.Setenv("BIND", ":8080"); err != nil {
+					log.Fatal(err)
+				}
 			},
 			wantErr: false,
 		},

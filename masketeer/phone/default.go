@@ -1,7 +1,13 @@
+/*
+Package phone have functions to mask phone number.
+*/
 package phone
 
-const defaultNumberOfVisibleCharsOnSufix = 4
-const DefaultUseAsVisibleChars = "0123456789"
+const (
+	defaultNumberOfVisibleCharsOnSufix = 4
+	// DefaultUseAsVisibleChars is the default number of visible characters.
+	DefaultUseAsVisibleChars = "0123456789"
+)
 
 func getDefault(opt *Option) *Option {
 	if opt == nil {

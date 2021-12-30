@@ -3,14 +3,17 @@ package env
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 	"time"
 )
 
-// Example of usage
-func ExampleOfUsage() {
+// Example of usage.
+func Example_ofUsage() {
 	// Manuall setting the env environment variable to make test works
-	os.Setenv("HOST", "0.0.0.0:8080")
+	if err := os.Setenv("HOST", "0.0.0.0:8080"); err != nil {
+		panic(err)
+	}
 
 	// Example of usage start below.
 	ctx := context.Background()
@@ -34,13 +37,18 @@ func ExampleOfUsage() {
 	// Host: 0.0.0.0:8080
 	// Timeout: 10s
 	//
-
 }
 
-func ExampleOfUsageWithPrefix() {
+func Example_ofUsageWithPrefix() {
 	// Manuall setting the env environment variable to make test works
-	os.Setenv("HTTP_HOST", "0.0.0.0:8080")
-	os.Setenv("HTTP_TIMEOUT", "5s") // this overrides it's default value
+	if err := os.Setenv("HTTP_HOST", "0.0.0.0:8080"); err != nil {
+		log.Fatal(err)
+	}
+
+	// this overrides it's default value
+	if err := os.Setenv("HTTP_TIMEOUT", "5s"); err != nil {
+		log.Fatal(err)
+	}
 
 	// Example of usage start below.
 	ctx := context.Background()
@@ -64,10 +72,9 @@ func ExampleOfUsageWithPrefix() {
 	// Host: 0.0.0.0:8080
 	// Timeout: 5s
 	//
-
 }
 
-func ExampleOfMissingParameters() {
+func Example_ofMissingParameters() {
 	// Example of usage start below.
 	ctx := context.Background()
 
@@ -81,6 +88,7 @@ func ExampleOfMissingParameters() {
 
 	if err := LoadEnv(ctx, cnf, prefix); err != nil {
 		fmt.Println(err)
+
 		return
 	}
 

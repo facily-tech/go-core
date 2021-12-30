@@ -2,6 +2,7 @@ package email
 
 import "strings"
 
+// Option is the struct of options to mask email with it.
 type Option struct {
 
 	/**
@@ -13,10 +14,8 @@ type Option struct {
 	NumberOfVisibleCharsOnPrefix int
 }
 
-/*
-	Mask will mask the email with given options or it default values
-	if "@" was not found then it will return a empty string
-*/
+// Mask will mask the email with given options or it default values
+// if "@" was not found then it will return a empty string.
 func Mask(email string, opt *Option) string {
 	opt = getDefault(opt)
 	email = strings.TrimSpace(email)

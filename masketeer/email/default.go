@@ -1,3 +1,6 @@
+/*
+Package email have functions to mask email.
+*/
 package email
 
 const defaultNumberOfVisibleCharsOnPrefix = 3

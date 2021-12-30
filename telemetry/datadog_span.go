@@ -9,6 +9,7 @@ type ddSpanContext struct {
 	traceID uint64
 }
 
+// nolint: ireturn // due compatibility it will not be changed to struct.
 func (dd *ddSpan) Context() SpanContext {
 	return &dd.context
 }
@@ -16,6 +17,7 @@ func (dd *ddSpan) Context() SpanContext {
 func (dd *ddSpanContext) SpanID() uint64 {
 	return dd.spanID
 }
+
 func (dd *ddSpanContext) TraceID() uint64 {
 	return dd.traceID
 }
