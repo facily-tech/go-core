@@ -1,3 +1,6 @@
+/*
+Package cryptography was made to encrypt sensitive data.
+*/
 package cryptography
 
 import (
@@ -16,12 +19,13 @@ type ICryptography interface {
 	Decrypt(string) (string, error)
 }
 
+// Cryptography struct.
 type Cryptography struct {
 	key   []byte
 	nonce []byte
 }
 
-// NewCryptography returns a new Cryptography struct
+// NewCryptography returns a new Cryptography struct.
 func NewCryptography(key []byte, nonce []byte) *Cryptography {
 
 	return &Cryptography{key: key, nonce: nonce}
@@ -39,10 +43,11 @@ func (s *Cryptography) Encrypt(plainText string) (string, error) {
 		return "", err
 	}
 	ciphertext := aesgcm.Seal(nil, s.nonce, []byte(plainText), nil)
-	return hex.EncodeToString(ciphertext), nil
+	ciphertextStr := hex.EncodeToString(ciphertext)
+	return ciphertextStr, nil
 }
 
-// Decrypt will decrypt a ciphertext previously encrypted .
+// Decrypt will decrypt a ciphertext previously encrypted.
 func (s *Cryptography) Decrypt(ciphertext string) (string, error) {
 	plainText, err := hex.DecodeString(ciphertext)
 	if err != nil {

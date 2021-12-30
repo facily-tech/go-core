@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// key obrigatório 16 digitos, nonce obrigatório 12 digitos
+// key required 16 digits, nonce required 12 digits
 //go:generate mockgen -source=/cryptography/cryptography.go -destination=/cryptography/cryptography_mock.go -package=cryptography
 func TestEncryptDecrypt(t *testing.T) {
 	telefone := "999999999"
