@@ -6,8 +6,13 @@ import (
 	"encoding/hex"
 )
 
-type CryptographyInterface interface {
+// ICryptography is Cryptography interface to use when you wanna make a default setup on its methods.
+type ICryptography interface {
+	/* Encrypt returns a string with the plainText encrypted
+	   if "plainText" was a error then it will return a empty string and a error */
 	Encrypt(string) (string, error)
+	/* Decrypt returns a string with the ciphertext decrypted
+	   if "ciphertext" was a error then it will return a empty string and a error */
 	Decrypt(string) (string, error)
 }
 
@@ -16,11 +21,13 @@ type Cryptography struct {
 	nonce []byte
 }
 
+// NewCryptography returns a new Cryptography struct
 func NewCryptography(key []byte, nonce []byte) *Cryptography {
 
 	return &Cryptography{key: key, nonce: nonce}
 }
 
+// Encrypt returns a encr struct
 func (s *Cryptography) Encrypt(plainText string) (string, error) {
 	block, err := aes.NewCipher(s.key)
 	if err != nil {
