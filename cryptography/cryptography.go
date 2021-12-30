@@ -7,6 +7,8 @@ import (
 	"crypto/aes"
 	"crypto/cipher"
 	"encoding/hex"
+
+	"github.com/pkg/errors"
 )
 
 // ICryptography is Cryptography interface to use when you wanna make a default setup on its methods.
@@ -35,15 +37,16 @@ func NewCryptography(key []byte, nonce []byte) *Cryptography {
 func (s *Cryptography) Encrypt(plainText string) (string, error) {
 	block, err := aes.NewCipher(s.key)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "can't initialize NewCipher")
 	}
 
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", err
+		return "", errors.Wrap(err, "can't initialize NewGCM")
 	}
 	ciphertext := aesgcm.Seal(nil, s.nonce, []byte(plainText), nil)
 	ciphertextStr := hex.EncodeToString(ciphertext)
+
 	return ciphertextStr, nil
 }
 
@@ -51,19 +54,23 @@ func (s *Cryptography) Encrypt(plainText string) (string, error) {
 func (s *Cryptography) Decrypt(ciphertext string) (string, error) {
 	plainText, err := hex.DecodeString(ciphertext)
 	if err != nil {
-		return "", err
+
+		return "", errors.Wrap(err, "error on decodeString to a byte value")
 	}
 	block, err := aes.NewCipher(s.key)
 	if err != nil {
-		return "", err
+
+		return "", errors.Wrap(err, "can't initialize NewCipher")
 	}
 	aesgcm, err := cipher.NewGCM(block)
 	if err != nil {
-		return "", err
+
+		return "", errors.Wrap(err, "can't initialize NewGCM")
 	}
 	decrypt, err := aesgcm.Open(nil, s.nonce, plainText, nil)
 	if err != nil {
-		return "", err
+
+		return "", errors.Wrap(err, "can't decrypt ciphertext")
 	}
 
 	return string(decrypt), nil
