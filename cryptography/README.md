@@ -1,6 +1,6 @@
 # Cryptography
 
-Cryptography is a lib to simplify sensitive data encryption.
+Cryptography is a symmetric key cryptography library. This type of encryption uses the same key to encrypt and also to decrypt messages.
 
 ## Installation
 

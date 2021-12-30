@@ -36,7 +36,10 @@ func (s *Cryptography) Encrypt(plainText string) (string, error) {
 }
 
 func (s *Cryptography) Decrypt(ciphertext string) (string, error) {
-	plainText, _ := hex.DecodeString(ciphertext)
+	plainText, err := hex.DecodeString(ciphertext)
+	if err != nil {
+		return "", err
+	}
 	block, err := aes.NewCipher(s.key)
 	if err != nil {
 		return "", err
