@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 )
 
-type CryptographyI interface {
+type CryptographyInterface interface {
 	Encrypt(string) (string, error)
 	Decrypt(string) (string, error)
 }
@@ -48,7 +48,7 @@ func (s *Cryptography) Decrypt(ciphertext string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	decrypt, err := aesgcm.Open(nil, s.nonce, []byte(plainText), nil)
+	decrypt, err := aesgcm.Open(nil, s.nonce, plainText, nil)
 	if err != nil {
 		return "", err
 	}
