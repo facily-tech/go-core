@@ -11,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 )
 
+//go:generate mockgen -source=/cryptography/cryptography.go -destination=/cryptography/cryptography_mock.go -package=cryptography
 // ICryptography is Cryptography interface to use when you wanna make a default setup on its methods.
 type ICryptography interface {
 	/* Encrypt returns a string with the plainText encrypted
