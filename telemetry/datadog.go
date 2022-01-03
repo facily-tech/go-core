@@ -111,5 +111,6 @@ func startProfiler(config DataDogConfig) error {
 	if err != nil {
 		return errors.Wrap(err, "unable to start datadog profiler")
 	}
+
 	return nil
 }
