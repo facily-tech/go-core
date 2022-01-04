@@ -27,9 +27,15 @@ type DataDog struct{}
 
 // DataDogConfig is the struct of config given to NewDataDog.
 type DataDogConfig struct {
-	Env          string `env:"ENV,required"`
-	Service      string `env:"SERVICE,required"`
-	Version      string
+	Env     string `env:"ENV,required"`
+	Service string `env:"SERVICE,required"`
+	Version string
+
+	// WithProfiler enables application profiling with Datadog's Profiler, reads
+	// directly from optional environment variable WITH_PROFILER.
+	// Although datadog claims low overhead with negligible impact in performance
+	// for production workloads, beaware enabling it may cause performance impacts
+	// in your application. We recommend enabling only when needed.
 	WithProfiler bool `env:"WITH_PROFILER"`
 }
 
