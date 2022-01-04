@@ -30,7 +30,7 @@ type DataDogConfig struct {
 	Env          string `env:"ENV,required"`
 	Service      string `env:"SERVICE,required"`
 	Version      string
-	WithProfiler bool
+	WithProfiler bool `env:"WITH_PROFILER"`
 }
 
 // NewDataDog returns a new Datadog implementation.
