@@ -4,9 +4,11 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/pkg/errors"
 	ddchi "gopkg.in/DataDog/dd-trace-go.v1/contrib/go-chi/chi.v5"
 	ddhttp "gopkg.in/DataDog/dd-trace-go.v1/contrib/net/http"
 	"gopkg.in/DataDog/dd-trace-go.v1/ddtrace/tracer"
+	"gopkg.in/DataDog/dd-trace-go.v1/profiler"
 )
 
 const (
@@ -28,17 +30,31 @@ type DataDogConfig struct {
 	Env     string `env:"ENV,required"`
 	Service string `env:"SERVICE,required"`
 	Version string
+
+	// WithProfiler enables application profiling with Datadog's Profiler, reads
+	// directly from optional environment variable WITH_PROFILER.
+	// Although datadog claims low overhead with negligible impact in performance
+	// for production workloads, beaware enabling it may cause performance impacts
+	// in your application. We recommend enabling only when needed.
+	WithProfiler bool `env:"WITH_PROFILER"`
 }
 
 // NewDataDog returns a new Datadog implementation.
-func NewDataDog(config DataDogConfig) *DataDog {
+func NewDataDog(config DataDogConfig) (*DataDog, error) {
 	tracer.Start([]tracer.StartOption{
 		tracer.WithEnv(config.Env),
 		tracer.WithService(config.Service),
 		tracer.WithServiceVersion(config.Version),
 	}...)
 
-	return &DataDog{}
+	if config.WithProfiler {
+		err := startProfiler(config)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return &DataDog{}, nil
 }
 
 // Middleware add into http framework datadog tracer to track each requisition.
@@ -83,4 +99,24 @@ func (DataDog) SpanFromContext(ctx context.Context) (Span, bool) {
 // Client receive *http.Client and return a *http.Client with datadog tracer wrapped in it.
 func Client(parent *http.Client) *http.Client {
 	return ddhttp.WrapClient(parent)
+}
+
+// startProfiler handles initialization of the datadog profiler, errors out
+// when it can't find an agent or APIKey.
+func startProfiler(config DataDogConfig) error {
+	err := profiler.Start(
+		profiler.WithService(config.Service),
+		profiler.WithEnv(config.Env),
+		profiler.WithVersion(config.Version),
+		profiler.WithProfileTypes(
+			profiler.CPUProfile,
+			profiler.HeapProfile,
+			profiler.GoroutineProfile,
+		),
+	)
+	if err != nil {
+		return errors.Wrap(err, "unable to start datadog profiler")
+	}
+
+	return nil
 }
