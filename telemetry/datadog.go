@@ -45,6 +45,7 @@ func NewDataDog(config DataDogConfig) (*DataDog, error) {
 		tracer.WithEnv(config.Env),
 		tracer.WithService(config.Service),
 		tracer.WithServiceVersion(config.Version),
+		tracer.WithRuntimeMetrics(),
 	}...)
 
 	if config.WithProfiler {
