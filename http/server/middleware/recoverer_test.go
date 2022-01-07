@@ -24,6 +24,12 @@ func testRequest(ctx context.Context, t *testing.T, ts *httptest.Server, method,
 	}
 
 	resp, err := http.DefaultClient.Do(req)
+	defer func() {
+		if err := resp.Body.Close(); err != nil {
+			t.Error(err)
+		}
+	}()
+
 	if err != nil {
 		t.Fatal(err)
 
@@ -44,7 +50,7 @@ func panicingHandler(http.ResponseWriter, *http.Request) {
 	panic("foo")
 }
 
-func TestRecoverer(t *testing.T) {
+func TestRecoverer_withPanic(t *testing.T) {
 	ctx := context.Background()
 
 	mockCtrl := gomock.NewController(t)
@@ -64,12 +70,36 @@ func TestRecoverer(t *testing.T) {
 	ts := httptest.NewServer(r)
 	defer ts.Close()
 
-	res, _ := testRequest(ctx, t, ts, "GET", "/", nil)
-	defer func() {
-		if err := res.Body.Close(); err != nil {
-			t.Error(err)
-		}
-	}()
+	// nolint: bodyclose // it is been closed inside of function
+	res, body := testRequest(ctx, t, ts, "GET", "/", nil)
 
-	assert.Equal(t, res.StatusCode, http.StatusInternalServerError)
+	assert.Equal(t, http.StatusInternalServerError, res.StatusCode)
+	assert.Equal(t, body, "")
+}
+
+func TestRecoverer_withOutPanic(t *testing.T) {
+	ctx := context.Background()
+
+	mockCtrl := gomock.NewController(t)
+	defer mockCtrl.Finish()
+
+	mockLogger := log.NewMockLogger(mockCtrl)
+	mockLogger.EXPECT().Error(
+		gomock.Not(gomock.Nil()),
+		panicErrorRecovered,
+		gomock.Not(gomock.Nil()),
+	).Times(0)
+
+	r := chi.NewRouter()
+	r.Use(Recoverer(mockLogger))
+	r.Get("/", func(http.ResponseWriter, *http.Request) {})
+
+	ts := httptest.NewServer(r)
+	defer ts.Close()
+
+	// nolint: bodyclose // it is been closed inside of function
+	res, body := testRequest(ctx, t, ts, "GET", "/", nil)
+
+	assert.Equal(t, http.StatusOK, res.StatusCode)
+	assert.Equal(t, body, "")
 }
