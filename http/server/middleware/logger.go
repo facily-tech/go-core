@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/facily-tech/go-core/log"
-	"github.com/go-chi/chi/middleware"
 	"github.com/pkg/errors"
 )
 
@@ -90,7 +89,6 @@ func statusLevel(logger log.Logger, status int) func(ctx context.Context, msg st
 func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			reqID := middleware.GetReqID(r.Context())
 			writer := &wrapWriter{status: http.StatusOK, ResponseWriter: w}
 			tt := time.Now()
 
@@ -99,7 +97,6 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 			statusLevel(logger, writer.status)(
 				r.Context(),
 				"http",
-				log.Any("requestID", reqID),
 				log.Any("method", r.Method),
 				log.Any("path", r.URL.Path),
 				log.Any("from", r.RemoteAddr),

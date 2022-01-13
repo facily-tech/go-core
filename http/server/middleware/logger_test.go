@@ -39,7 +39,6 @@ func TestLogger(t *testing.T) {
 			want: want{
 				code: http.StatusOK,
 				params: []interface{}{
-					gomock.Any(),
 					log.Any("method", http.MethodGet),
 					log.Any("path", "/"),
 					gomock.Any(),
@@ -68,7 +67,6 @@ func TestLogger(t *testing.T) {
 			want: want{
 				code: http.StatusOK,
 				params: []interface{}{
-					gomock.Any(),
 					log.Any("method", http.MethodGet),
 					log.Any("path", "/"),
 					gomock.Any(),
@@ -97,7 +95,6 @@ func TestLogger(t *testing.T) {
 			want: want{
 				code: http.StatusAccepted,
 				params: []interface{}{
-					gomock.Any(),
 					log.Any("method", http.MethodGet),
 					log.Any("path", "/"),
 					gomock.Any(),
@@ -129,7 +126,6 @@ func TestLogger(t *testing.T) {
 			want: want{
 				code: http.StatusAccepted,
 				params: []interface{}{
-					gomock.Any(),
 					log.Any("method", http.MethodGet),
 					log.Any("path", "/"),
 					gomock.Any(),
