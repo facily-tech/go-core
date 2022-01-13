@@ -10,6 +10,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+const traceKeyNumber int = 3
+
 var _ Logger = (*Zap)(nil)
 
 // Zap wraps a zap.Logger and implements Logger inteface.
@@ -55,7 +57,7 @@ func fieldsToZap(ctx context.Context, tracer telemetry.Tracer, fs []Field) []zap
 		zapFields[i] = zap.Any(fs[i].Key, fs[i].Value)
 	}
 
-	tracerMap := make(map[string]interface{}, 3)
+	tracerMap := make(map[string]interface{}, traceKeyNumber)
 	if reqID := middleware.GetReqID(ctx); reqID != "" {
 		tracerMap["requestID"] = reqID
 	}
