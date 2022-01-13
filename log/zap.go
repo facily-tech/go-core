@@ -70,7 +70,7 @@ func fieldsToZap(ctx context.Context, tracer telemetry.Tracer, fs []Field) []zap
 		}
 	}
 
-	if tracerMap["requestID"] != "" || tracerMap["traceID"] != "" {
+	if tracerMap["requestID"] != nil || tracerMap["traceID"] != nil {
 		zapFields = append(zapFields, zap.Any(telemetry.TracerKey, tracerMap))
 	}
 
