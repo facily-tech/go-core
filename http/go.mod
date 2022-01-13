@@ -7,6 +7,7 @@ require (
 	github.com/facily-tech/go-core/telemetry v0.3.0
 	github.com/facily-tech/go-core/types v0.1.1
 	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang/mock v1.6.0
 	github.com/google/go-querystring v1.1.0
 	github.com/pkg/errors v0.9.1
@@ -18,7 +19,6 @@ require (
 	github.com/DataDog/sketches-go v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
-	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/golang/protobuf v1.4.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/newrelic/go-agent/v3 v3.15.1 // indirect
