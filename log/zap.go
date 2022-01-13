@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/facily-tech/go-core/telemetry"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -54,11 +55,21 @@ func fieldsToZap(ctx context.Context, tracer telemetry.Tracer, fs []Field) []zap
 		zapFields[i] = zap.Any(fs[i].Key, fs[i].Value)
 	}
 
+	tracerMap := make(map[string]interface{}, 3)
+	if reqID := middleware.GetReqID(ctx); reqID != "" {
+		tracerMap["requestID"] = reqID
+	}
+
 	if tracer != nil {
 		if span, ok := tracer.SpanFromContext(ctx); ok {
 			spanCtx := span.Context()
-			zapFields = append(zapFields, zap.Any(telemetry.TracerKey, spanCtx.ToMap()))
+			tracerMap["traceID"] = spanCtx.TraceID()
+			tracerMap["spanID"] = spanCtx.SpanID()
 		}
+	}
+
+	if tracerMap["requestID"] != "" || tracerMap["traceID"] != "" {
+		zapFields = append(zapFields, zap.Any(telemetry.TracerKey, tracerMap))
 	}
 
 	return zapFields
