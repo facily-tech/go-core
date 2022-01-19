@@ -25,6 +25,7 @@ type ZapConfig struct {
 	Version           string
 	DisableStackTrace bool
 	Tracer            telemetry.Tracer
+	Debug             bool `env:"DEBUG"`
 }
 
 // NewLoggerZap implements Logger using uber zap structured log package.
@@ -35,6 +36,9 @@ func NewLoggerZap(config ZapConfig) (*Zap, error) {
 	loggerConfig.DisableStacktrace = config.DisableStackTrace
 	loggerConfig.InitialFields = map[string]interface{}{
 		"version": config.Version,
+	}
+	if config.Debug {
+		loggerConfig.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
 	}
 
 	logger, err := loggerConfig.Build(zap.AddCallerSkip(1))

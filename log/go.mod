@@ -4,7 +4,9 @@ go 1.17
 
 require (
 	github.com/facily-tech/go-core/telemetry v0.3.0
+	github.com/go-chi/chi/v5 v5.0.7
 	github.com/golang/mock v1.6.0
+	github.com/pkg/errors v0.9.1
 	go.uber.org/zap v1.19.1
 )
 
@@ -12,12 +14,10 @@ require (
 	github.com/DataDog/datadog-go v4.4.0+incompatible // indirect
 	github.com/DataDog/sketches-go v1.0.0 // indirect
 	github.com/Microsoft/go-winio v0.5.1 // indirect
-	github.com/go-chi/chi/v5 v5.0.7 // indirect
 	github.com/golang/protobuf v1.4.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/newrelic/go-agent/v3 v3.15.1 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/tinylib/msgp v1.1.2 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
