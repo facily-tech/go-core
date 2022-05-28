@@ -3,6 +3,7 @@ package telemetry
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/pkg/errors"
@@ -56,7 +57,8 @@ func (NewRelic) Client(parent *http.Client) *http.Client {
 }
 
 // Close does nothing because it is not required to close connection with NewRelic Agent.
-func (NewRelic) Close() {
+func (relic *NewRelic) Close() {
+	relic.app.Shutdown(time.Minute)
 }
 
 // Name returns the name of telemetry implementation used, this case is newrelic.
@@ -66,6 +68,35 @@ func (NewRelic) Name() Name {
 
 // SpanFromContext does nothing it is a mock method.
 // nolint: ireturn // it will not be changed to struct to mantain compatibility
-func (NewRelic) SpanFromContext(ctx context.Context) (Span, bool) {
-	return nil, false
+func (relic *NewRelic) SpanFromContext(ctx context.Context) (Span, bool) {
+	tx := newrelic.FromContext(ctx)
+	if tx == nil {
+		return nil, false
+	}
+
+	return &txn{tx}, true
+}
+
+type txn struct {
+	tx *newrelic.Transaction
+}
+
+// nolint: ireturn // due compatibility it will not be changed to struct.
+func (t *txn) Context() SpanContext {
+	return t
+}
+
+func (t *txn) SpanID() interface{} {
+	return t.tx.GetLinkingMetadata().SpanID
+}
+
+func (t *txn) TraceID() interface{} {
+	return t.tx.GetLinkingMetadata().TraceID
+}
+
+func (t *txn) ToMap() map[string]interface{} {
+	return map[string]interface{}{
+		"traceID": t.TraceID(),
+		"spanID":  t.SpanID(),
+	}
 }
