@@ -33,10 +33,10 @@ type Span interface {
 // SpanContext handle spans in context.
 type SpanContext interface {
 	// SpanID Return the SpanID
-	SpanID() uint64
+	SpanID() interface{}
 
 	// TraceID returns the trace ID that this context is carrying.
-	TraceID() uint64
+	TraceID() interface{}
 
 	ToMap() map[string]interface{}
 }

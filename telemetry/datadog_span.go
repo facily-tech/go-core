@@ -14,11 +14,11 @@ func (dd *ddSpan) Context() SpanContext {
 	return &dd.context
 }
 
-func (dd *ddSpanContext) SpanID() uint64 {
+func (dd *ddSpanContext) SpanID() interface{} {
 	return dd.spanID
 }
 
-func (dd *ddSpanContext) TraceID() uint64 {
+func (dd *ddSpanContext) TraceID() interface{} {
 	return dd.traceID
 }
 
