@@ -33,6 +33,4 @@ require (
 	gopkg.in/DataDog/dd-trace-go.v1 v1.34.0 // indirect
 )
 
-require (
-	github.com/mattn/go-isatty v0.0.12 // indirect
-)
+require github.com/mattn/go-isatty v0.0.12 // indirect
