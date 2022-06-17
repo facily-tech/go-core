@@ -2,9 +2,12 @@ package log
 
 import (
 	"context"
+	"os"
+	"strings"
 
 	"github.com/facily-tech/go-core/telemetry"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/mattn/go-colorable"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -46,10 +49,28 @@ func NewLoggerZap(config ZapConfig) (*Zap, error) {
 		return nil, errors.Wrap(err, "error on building zap logger")
 	}
 
+	if appEnvironment() == "local" {
+		loggerConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+
+		logger = zap.New(
+			zapcore.NewCore(
+				zapcore.NewConsoleEncoder(loggerConfig.EncoderConfig),
+				zapcore.AddSync(colorable.NewColorableStdout()),
+				loggerConfig.Level,
+			),
+		)
+	}
+
 	return &Zap{
 		logger: logger,
 		tracer: config.Tracer,
 	}, nil
+}
+
+func appEnvironment() string {
+	env := os.Getenv("ENV")
+
+	return strings.ToLower(env)
 }
 
 // fieldsToZap convert Fields ([]Field) to []zap.Field.
