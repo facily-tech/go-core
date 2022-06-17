@@ -16,6 +16,7 @@ require (
 	github.com/Microsoft/go-winio v0.5.1 // indirect
 	github.com/golang/protobuf v1.4.1 // indirect
 	github.com/google/uuid v1.3.0 // indirect
+	github.com/mattn/go-colorable v0.1.6
 	github.com/newrelic/go-agent/v3 v3.15.1 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
 	github.com/tinylib/msgp v1.1.2 // indirect
@@ -30,4 +31,8 @@ require (
 	google.golang.org/grpc v1.27.0 // indirect
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/DataDog/dd-trace-go.v1 v1.34.0 // indirect
+)
+
+require (
+	github.com/mattn/go-isatty v0.0.12 // indirect
 )
