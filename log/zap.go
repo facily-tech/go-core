@@ -7,7 +7,7 @@ import (
 
 	"github.com/facily-tech/go-core/telemetry"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/mattn/go-colorable"
+	colorable "github.com/mattn/go-colorable"
 	"github.com/pkg/errors"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
