@@ -117,13 +117,17 @@ func HasRole(ctx context.Context, role string) bool {
 	if !ok {
 		return false
 	}
-	roles, ok := claims["realm_access"].(map[string][]string)
+	access, ok := claims["realm_access"].(map[string]interface{})
+	if !ok {
+		return false
+	}
+	roles, ok := access["roles"].([]interface{})
 	if !ok {
 		return false
 	}
 
 	found := false
-	for _, r := range roles["roles"] {
+	for _, r := range roles {
 		if role == r {
 			found = true
 

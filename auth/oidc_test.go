@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"reflect"
@@ -127,7 +128,7 @@ func TestHasRole(t *testing.T) {
 			name: "role found",
 			args: args{
 				ctx: context.WithValue(context.Background(), contextKey,
-					Claims{"realm_access": map[string][]string{"roles": {"view"}}}),
+					Claims{"realm_access": map[string]interface{}{"roles": []interface{}{"view"}}}),
 				role: "view",
 			},
 			want: true,
@@ -136,7 +137,7 @@ func TestHasRole(t *testing.T) {
 			name: "role not found",
 			args: args{
 				ctx: context.WithValue(context.Background(), contextKey,
-					Claims{"realm_access": map[string][]string{"roles": {"view"}}}),
+					Claims{"realm_access": map[string]interface{}{"roles": []interface{}{"view"}}}),
 				role: "charge",
 			},
 			want: false,
@@ -178,7 +179,7 @@ func TestHasRoleMiddleware(t *testing.T) {
 				r := httptest.NewRequest(http.MethodGet, "/", nil)
 
 				return r.WithContext(context.WithValue(context.Background(), contextKey,
-					Claims{"realm_access": map[string][]string{"roles": {"view"}}}))
+					Claims{"realm_access": map[string]interface{}{"roles": []interface{}{"view"}}}))
 			}(),
 			want: http.StatusOK,
 		},
@@ -191,7 +192,7 @@ func TestHasRoleMiddleware(t *testing.T) {
 				r := httptest.NewRequest(http.MethodGet, "/", nil)
 
 				return r.WithContext(context.WithValue(context.Background(), contextKey,
-					Claims{"realm_access": map[string][]string{"roles": {"charge"}}}))
+					Claims{"realm_access": map[string]interface{}{"roles": []interface{}{"charge"}}}))
 			}(),
 			want: http.StatusUnauthorized,
 		},
@@ -366,5 +367,53 @@ func TestGetRootClaim(t *testing.T) {
 				t.Errorf("GetRootClaim() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func BenchmarkNoAuth(b *testing.B) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+	defer ts.Close()
+
+	for i := 0; i < b.N; i++ {
+		resp, err := http.DefaultClient.Do(req)
+		if err != nil {
+			b.Fatal(err)
+		}
+
+		_, err = io.Copy(io.Discard, resp.Body)
+		assert.NoError(b, err)
+
+		assert.NoError(b, resp.Body.Close())
+	}
+}
+
+func BenchmarkAuth(b *testing.B) {
+	o := &OIDC{
+		oidcProvider: &fakeOIDCProvider{},
+		clientID:     "fintech-lending-providers",
+		logger:       log.NewMockLogger(gomock.NewController(b)),
+	}
+	ts := httptest.NewServer(HasRoleMiddleware("view")(o.Auth(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))))
+	defer ts.Close()
+
+	req, err := http.NewRequestWithContext(context.WithValue(context.Background(), contextKey,
+		Claims{"realm_access": map[string]interface{}{"roles": []interface{}{"view"}}}), http.MethodGet, ts.URL, nil)
+	if err != nil {
+		b.Fatal(err)
+	}
+	req.Header.Add("Authorization", "Bearer eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJHYldVYnBHcnllLThoaXFiVWREY0hlSlg4UGE0NVF4NURkVkx0RHFDeHk4In0.eyJleHAiOjE2NjA4NTE4NjgsImlhdCI6MTY2MDg1MTU2OCwianRpIjoiNjI0Y2JjYjQtMWI3Ni00NjhlLTkwZGItYmI3ZTAxZDVjMWRhIiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9maW5hbmNlIiwiYXVkIjoiZmludGVjaC1sZW5kaW5nLXByb3ZpZGVycyIsInN1YiI6IjNmNTI5NjBhLThhNDItNGNlNi1hMmEyLTA4OWRiNWYwY2U2OCIsInR5cCI6IkJlYXJlciIsImF6cCI6InNlbGxlcnMtYmFja2VuZCIsImFjciI6IjEiLCJhbGxvd2VkLW9yaWdpbnMiOlsiIiwiKiJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsidmlldyIsImNoYXJnZSIsImRlZmF1bHQtcm9sZXMtZmluYW5jZSJdfSwicmVzb3VyY2VfYWNjZXNzIjp7InNlbGxlcnMtYmFja2VuZCI6eyJyb2xlcyI6WyJ1bWFfcHJvdGVjdGlvbiJdfX0sInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgZW1haWwgZ29vZC1zZXJ2aWNlIiwiZW1haWxfdmVyaWZpZWQiOmZhbHNlLCJjbGllbnRIb3N0IjoiMTkyLjE2OC4xMjguMSIsImNsaWVudElkIjoic2VsbGVycy1iYWNrZW5kIiwicHJlZmVycmVkX3VzZXJuYW1lIjoic2VydmljZS1hY2NvdW50LXNlbGxlcnMtYmFja2VuZCIsImNsaWVudEFkZHJlc3MiOiIxOTIuMTY4LjEyOC4xIn0.mQBCtFvwdeu91yH-ykqZ3k0cRMUMRkmHytYU1L03W-7yt7NCfPaVm0R_MEMYd8WY_34Joi61LmkMD6KfKjQp01jjIScQHopCkkggAwb3vN4371SeHSdZk5dEGuxi4SXuiosLs-YL7ZmUSAISEd9NrmEsr8UsILpnwomvVtunLx8EtJMVoo8UwuQSE6Y2yikVSTn5T6R-13Z2L3vBl3tnizFL4cRDNhGhn-WqZnND-P5HyVeIwQj3yCKZNnkmppyrfdeN5LYSGJL4uzRqjB1KpysPmcEZFvgXT-EHpYSvMgLOm4uWuG7MynfsSQ_Q6NHaD2L8_cvaeN294vPcG4OUZQ")
+
+	for i := 0; i < b.N; i++ {
+		resp, err := http.DefaultClient.Do(req)
+		assert.NoError(b, err)
+
+		_, err = io.Copy(io.Discard, resp.Body)
+		assert.NoError(b, err)
+
+		assert.NoError(b, resp.Body.Close())
 	}
 }
