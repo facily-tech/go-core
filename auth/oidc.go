@@ -24,6 +24,8 @@ type (
 const (
 	contextKey contextType = "auth.claims"
 	tokenParts int         = 2
+
+	tokenPos int = 1
 )
 
 // OIDC represents our authentication using openid connect and required
@@ -82,10 +84,10 @@ func (o *OIDC) Auth(next http.Handler) http.Handler {
 			SkipClientIDCheck:    false,
 			SkipExpiryCheck:      false,
 			SkipIssuerCheck:      false,
-		}).Verify(r.Context(), parts[1])
+		}).Verify(r.Context(), parts[tokenPos])
 		if err != nil {
 			http.Error(w, "cannot validate token: "+err.Error(), http.StatusUnauthorized)
-			o.logger.Warn(r.Context(), "auth: invalid token", log.Any("token", parts[1]), log.Error(err))
+			o.logger.Warn(r.Context(), "auth: invalid token", log.Any("token", parts[tokenPos]), log.Error(err))
 
 			return
 		}
@@ -129,9 +131,7 @@ func HasRole(ctx context.Context, role string) bool {
 	found := false
 	for _, r := range roles {
 		if role == r {
-			found = true
-
-			break
+			return true
 		}
 	}
 
