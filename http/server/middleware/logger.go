@@ -94,11 +94,22 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 
 			next.ServeHTTP(writer, r)
 
+			headers := make(map[string]string)
+			for k, v := range r.Header {
+				if k == "Authorization" {
+					headers[k] = "*****"
+				} else {
+					headers[k] = v
+				}
+			}
+
 			statusLevel(logger, writer.status)(
 				r.Context(),
 				"http",
 				log.Any("method", r.Method),
+				log.Any("host", r.Host),
 				log.Any("path", r.URL.Path),
+				log.Any("headers", headers),
 				log.Any("from", r.RemoteAddr),
 				log.Any("status", writer.status),
 				log.Any("size_bytes", writer.size),
