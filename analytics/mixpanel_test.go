@@ -82,7 +82,7 @@ func TestTrackSync(t *testing.T) {
 		}
 		logger := log.NewMockLogger(gomock.NewController(t))
 		a.Logger = logger
-		a.MixpanelEvent = &mixpanel.Mock{People: make(map[string]*mixpanel.MockPeople)}
+		a.MixpanelEvent = &MixMock{}
 
 		err := a.TrackSync("eventName", map[string]interface{}{"propertie": "value"})
 		assert.Error(t, err)
