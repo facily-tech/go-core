@@ -1,8 +1,10 @@
 package middleware
 
 import (
+	"bytes"
 	"context"
 	"net/http"
+	"net/http/httputil"
 	"time"
 
 	"github.com/facily-tech/go-core/log"
@@ -15,6 +17,7 @@ type wrapWriter struct {
 	status      int
 	size        int
 	wroteHeader bool
+	bodyBuffer  bytes.Buffer
 }
 
 // Write writes the data to the connection as part of an HTTP reply.
@@ -42,6 +45,11 @@ func (r *wrapWriter) Write(data []byte) (int, error) {
 	if !r.wroteHeader {
 		r.WriteHeader(http.StatusOK)
 	}
+	bn, err := r.bodyBuffer.Write(data)
+	if err != nil {
+		return bn, err
+	}
+
 	n, err := r.ResponseWriter.Write(data)
 	r.size += n
 
@@ -92,18 +100,47 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 			writer := &wrapWriter{status: http.StatusOK, ResponseWriter: w}
 			tt := time.Now()
 
-			next.ServeHTTP(writer, r)
+			authBkp := make([]string, len(r.Header["Authorization"]))
+			if v, exist := r.Header["Authorization"]; exist {
+				copy(authBkp, v)
+				r.Header["Authorization"] = []string{"****"}
+			}
 
-			statusLevel(logger, writer.status)(
-				r.Context(),
-				"http",
+			reqbody, err := httputil.DumpRequest(r, true)
+			if err != nil {
+				logger.Error(r.Context(), "can't open request", log.Error(err))
+			}
+
+			if _, exist := r.Header["Authorization"]; exist {
+				copy(r.Header["Authorization"], authBkp)
+			}
+
+			logger.Info(r.Context(), "request",
 				log.Any("method", r.Method),
 				log.Any("path", r.URL.Path),
 				log.Any("from", r.RemoteAddr),
+				log.Any("body", string(reqbody)),
+			)
+
+			next.ServeHTTP(writer, r)
+
+			IP := r.RemoteAddr
+			// try to get ip from reverse proxy header
+			if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
+				IP = ip
+			}
+
+			statusLevel(logger, writer.status)(
+				r.Context(),
+				"response",
+				log.Any("method", r.Method),
+				log.Any("path", r.URL.Path),
+				log.Any("from", IP),
 				log.Any("status", writer.status),
 				log.Any("size_bytes", writer.size),
 				log.Any("elapsed_seconds", time.Since(tt).Seconds()),
 				log.Any("elapsed", time.Since(tt).String()),
+				log.Any("body", writer.bodyBuffer.String()),
 			)
 		})
 	}
