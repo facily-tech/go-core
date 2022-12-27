@@ -47,7 +47,7 @@ func (r *wrapWriter) Write(data []byte) (int, error) {
 	}
 	bn, err := r.bodyBuffer.Write(data)
 	if err != nil {
-		return bn, err
+		return bn, errors.WithStack(err)
 	}
 
 	n, err := r.ResponseWriter.Write(data)
