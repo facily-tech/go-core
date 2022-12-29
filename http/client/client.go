@@ -6,10 +6,13 @@ package client
 import (
 	"net/http"
 	"net/http/httputil"
+	"regexp"
+	"strconv"
 	"time"
 
 	"github.com/facily-tech/go-core/log"
 	"github.com/facily-tech/go-core/telemetry"
+	"github.com/pkg/errors"
 )
 
 // PrefixHTTP is the env prefix of Config environment variables.
@@ -17,7 +20,8 @@ const PrefixHTTP = "HTTP_"
 
 // Config of the http client.
 type Config struct {
-	Timeout time.Duration `env:"TIMEOUT,required"`
+	Timeout                time.Duration `env:"TIMEOUT,required"`
+	RoundtripperStatusCode []string      `env:"ROUNDTRIPPER_STATUSCODE,default=2.."`
 }
 
 // SetTimeout set request timeout.
@@ -35,47 +39,62 @@ func NewHTTPClient(tracer telemetry.Tracer, opts ...func(*http.Client)) *http.Cl
 	return tracer.Client(client)
 }
 
-func WithLogger(c *http.Client, log log.Logger) func(*http.Client) {
-	return func(c *http.Client) {
-		c.Transport = NewLogTripper(c.Transport, log)
-	}
+func WithLogger(c *http.Client, log log.Logger, acceptedStatusCode []string) {
+	c.Transport = NewLogTripper(c.Transport, log, acceptedStatusCode)
 }
 
 type HeaderTripper struct {
 	http.RoundTripper
 	log log.Logger
+
+	responseStatusAcceptList []string
 }
 
-func NewLogTripper(parent http.RoundTripper, log log.Logger) *HeaderTripper {
+func NewLogTripper(parent http.RoundTripper, log log.Logger, acceptedStatusCodes []string) *HeaderTripper {
 	if parent == nil {
 		parent = http.DefaultTransport
 	}
 	return &HeaderTripper{
 		RoundTripper: parent,
 		log:          log,
+
+		responseStatusAcceptList: acceptedStatusCodes,
 	}
 }
 
 func (rt *HeaderTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	dr, err := httputil.DumpRequestOut(r, true)
 	if err != nil {
-		return nil, err
+		return nil, errors.WithStack(err)
 	}
 
 	rt.log.Info(r.Context(), "http request", log.Any("dump", string(dr)))
 
 	resp, err := rt.RoundTripper.RoundTrip(r)
 	if err != nil {
-		return resp, err
+		return resp, errors.WithStack(err)
 	}
 
 	dresp, err := httputil.DumpResponse(resp, true)
 	if err != nil {
-		return resp, err
+		return resp, errors.WithStack(err)
 	}
-	if resp.StatusCode >= http.StatusBadRequest {
+	if !rt.accept(resp.StatusCode) {
 		rt.log.Info(r.Context(), "http response", log.Any("dump", string(dresp)))
 	}
 
-	return resp, err
+	return resp, errors.WithStack(err)
+}
+
+func (rt *HeaderTripper) accept(statusCode int) bool {
+	code := strconv.Itoa(statusCode)
+	matches := 0
+	for _, v := range rt.responseStatusAcceptList {
+		validStatus := regexp.MustCompile(v)
+		if validStatus.MatchString(code) {
+			matches++
+		}
+	}
+
+	return matches > 0
 }
