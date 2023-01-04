@@ -5,11 +5,19 @@ import (
 	"context"
 	"net/http"
 	"net/http/httputil"
+	"strings"
 	"time"
 
 	"github.com/facily-tech/go-core/log"
 	"github.com/pkg/errors"
 )
+
+// DontLogBodyOnSuccess default prefix to not log response in case of success.
+var DontLogBodyOnSuccess = []string{
+	"/swagger",
+	"/metrics",
+	"/health",
+}
 
 // wrapWriter implements http.ResponseWriter and saves status and size for logging.
 type wrapWriter struct {
@@ -97,7 +105,13 @@ func statusLevel(logger log.Logger, status int) func(ctx context.Context, msg st
 func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			writer := &wrapWriter{status: http.StatusOK, ResponseWriter: w}
+			writer := &wrapWriter{
+				ResponseWriter: w,
+				status:         http.StatusOK,
+				size:           0,
+				wroteHeader:    false,
+				bodyBuffer:     bytes.Buffer{},
+			}
 			tt := time.Now()
 
 			authBkp := make([]string, len(r.Header["Authorization"]))
@@ -130,6 +144,11 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 				IP = ip
 			}
 
+			for _, v := range DontLogBodyOnSuccess {
+				if strings.HasPrefix(r.URL.Path, v) && writer.status < http.StatusBadRequest {
+					return
+				}
+			}
 			statusLevel(logger, writer.status)(
 				r.Context(),
 				"response",
