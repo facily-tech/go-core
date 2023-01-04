@@ -44,7 +44,6 @@ func (m *TelemetryMock) Name() telemetry.Name {
 }
 
 // Get SpanFromContext.
-//nolint:ireturn // appropriate use of interface here.
 func (m *TelemetryMock) SpanFromContext(ctx context.Context) (telemetry.Span, bool) {
 	panic("not implemented")
 }
@@ -69,7 +68,7 @@ func TestWithLogger(t *testing.T) {
 		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 		assert.NoError(t, err)
 
-		resp, err := c.Do(req)
+		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
 		assert.NoError(t, err)
 		defer closeHelper(t, resp.Body)
 
@@ -94,7 +93,7 @@ func TestWithLogger(t *testing.T) {
 		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 		assert.NoError(t, err)
 
-		resp, err := c.Do(req)
+		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
 		assert.NoError(t, err)
 		defer closeHelper(t, resp.Body)
 	})
@@ -118,7 +117,7 @@ func TestWithLogger(t *testing.T) {
 		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 		assert.NoError(t, err)
 
-		resp, err := c.Do(req)
+		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
 		assert.NoError(t, err)
 		defer closeHelper(t, resp.Body)
 	})
@@ -144,7 +143,7 @@ func TestWithLogger(t *testing.T) {
 
 		WithLogger(httpClient, logMock, config.RoundtripperStatusCode)
 
-		resp, err := httpClient.Get(srv.URL)
+		resp, err := httpClient.Get(srv.URL) //nolint:bodyclose // false positive our request body is nil
 		assert.NoError(t, err)
 		defer closeHelper(t, resp.Body)
 	})

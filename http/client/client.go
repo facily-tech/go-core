@@ -39,10 +39,14 @@ func NewHTTPClient(tracer telemetry.Tracer, opts ...func(*http.Client)) *http.Cl
 	return tracer.Client(client)
 }
 
+// WithLogger wrap http client transport with log.
+// If response code does not match any acceptedStatusCode, response body is logged.
 func WithLogger(c *http.Client, log log.Logger, acceptedStatusCode []string) {
 	c.Transport = NewLogTripper(c.Transport, log, acceptedStatusCode)
 }
 
+// HeaderTripper wrap http.RoundTripper to enrich with log. This way all outgoing
+// requests (even bodies) will be logged.
 type HeaderTripper struct {
 	http.RoundTripper
 	log log.Logger
@@ -50,10 +54,13 @@ type HeaderTripper struct {
 	responseStatusAcceptList []string
 }
 
+// NewLogTripper creates a new HeaderTripper using parent http.RoundTripper with log logger and will log responses
+// bodies if no acceptedSatusCodes match (regex are accepted).
 func NewLogTripper(parent http.RoundTripper, log log.Logger, acceptedStatusCodes []string) *HeaderTripper {
 	if parent == nil {
 		parent = http.DefaultTransport
 	}
+
 	return &HeaderTripper{
 		RoundTripper: parent,
 		log:          log,
@@ -62,6 +69,7 @@ func NewLogTripper(parent http.RoundTripper, log log.Logger, acceptedStatusCodes
 	}
 }
 
+// RoundTrip refer to http.RoundTripper.
 func (rt *HeaderTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 	dr, err := httputil.DumpRequestOut(r, true)
 	if err != nil {
