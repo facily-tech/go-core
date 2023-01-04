@@ -20,32 +20,44 @@ type TelemetryMock struct{}
 
 // Middleware must return a new handler with cross application tracing (CAT) or distributed tracing.
 func (m *TelemetryMock) Middleware(next http.Handler) http.Handler {
-	panic("not implemented") // TODO: Implement
+	panic("not implemented")
 }
 
 // Client wraps parent with tracing capabilities, parent is modified during this process.
 func (m *TelemetryMock) Client(parent *http.Client) *http.Client {
-	return &http.Client{}
+	return &http.Client{
+		Transport:     nil,
+		CheckRedirect: nil,
+		Jar:           nil,
+		Timeout:       0,
+	}
 }
 
 // Close should be called when the application end.
 func (m *TelemetryMock) Close() {
-	panic("not implemented") // TODO: Implement
+	panic("not implemented")
 }
 
-// Return the Name of Which implementation is using ex: DataDog, NewRelic
+// Return the Name of Which implementation is using ex: DataDog, NewRelic.
 func (m *TelemetryMock) Name() telemetry.Name {
-	panic("not implemented") // TODO: Implement
+	panic("not implemented")
 }
 
-// Get SpanFromContext given
+// Get SpanFromContext.
+//nolint:ireturn // appropriate use of interface here.
 func (m *TelemetryMock) SpanFromContext(ctx context.Context) (telemetry.Span, bool) {
-	panic("not implemented") // TODO: Implement
+	panic("not implemented")
 }
 
 func TestWithLogger(t *testing.T) {
 	t.Run("success, request info", func(t *testing.T) {
-		c := &http.Client{}
+		c := &http.Client{
+			Transport:     nil,
+			CheckRedirect: nil,
+			Jar:           nil,
+			Timeout:       0,
+		}
+
 		logMock := log.NewMockLogger(gomock.NewController(t))
 		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
 
@@ -54,14 +66,22 @@ func TestWithLogger(t *testing.T) {
 
 		WithLogger(c, logMock, []string{"2.."})
 
-		resp, err := c.Get(srv.URL)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 		assert.NoError(t, err)
-		defer resp.Body.Close()
+
+		resp, err := c.Do(req)
+		assert.NoError(t, err)
+		defer closeHelper(t, resp.Body)
 
 	})
 
 	t.Run("success, response body", func(t *testing.T) {
-		c := &http.Client{}
+		c := &http.Client{
+			Transport:     nil,
+			CheckRedirect: nil,
+			Jar:           nil,
+			Timeout:       0,
+		}
 		logMock := log.NewMockLogger(gomock.NewController(t))
 		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
 		logMock.EXPECT().Info(gomock.Any(), "http response", gomock.Any()).Times(1)
@@ -71,14 +91,21 @@ func TestWithLogger(t *testing.T) {
 
 		WithLogger(c, logMock, []string{"2.."})
 
-		resp, err := c.Get(srv.URL)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 		assert.NoError(t, err)
-		defer resp.Body.Close()
 
+		resp, err := c.Do(req)
+		assert.NoError(t, err)
+		defer closeHelper(t, resp.Body)
 	})
 
 	t.Run("we should not call response log because we are accepting 5xx status", func(t *testing.T) {
-		c := &http.Client{}
+		c := &http.Client{
+			Transport:     nil,
+			CheckRedirect: nil,
+			Jar:           nil,
+			Timeout:       0,
+		}
 		logMock := log.NewMockLogger(gomock.NewController(t))
 		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
 		logMock.EXPECT().Info(gomock.Any(), "http response", gomock.Any()).Times(0)
@@ -88,17 +115,22 @@ func TestWithLogger(t *testing.T) {
 
 		WithLogger(c, logMock, []string{"[235].."})
 
-		resp, err := c.Get(srv.URL)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
 		assert.NoError(t, err)
-		defer resp.Body.Close()
 
+		resp, err := c.Do(req)
+		assert.NoError(t, err)
+		defer closeHelper(t, resp.Body)
 	})
 
 	t.Run("complete example with trigger, roundtripper logger and accept code", func(t *testing.T) {
 		httpClient := NewHTTPClient(&TelemetryMock{})
 		t.Setenv("HTTP_TIMEOUT", "10s")
 
-		config := Config{}
+		config := Config{
+			Timeout:                0,
+			RoundtripperStatusCode: nil,
+		}
 		err := env.LoadEnv(context.Background(), &config, PrefixHTTP)
 		assert.NoError(t, err)
 
@@ -114,7 +146,13 @@ func TestWithLogger(t *testing.T) {
 
 		resp, err := httpClient.Get(srv.URL)
 		assert.NoError(t, err)
-		defer resp.Body.Close()
-
+		defer closeHelper(t, resp.Body)
 	})
+}
+
+func closeHelper(t *testing.T, closer interface{ Close() error }) {
+	t.Helper()
+	if err := closer.Close(); err != nil {
+		t.Error(err)
+	}
 }
