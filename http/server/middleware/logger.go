@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	utils "github.com/facily-tech/go-core/http/utils"
 	"github.com/facily-tech/go-core/log"
 	"github.com/pkg/errors"
 )
@@ -149,7 +150,8 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 					return
 				}
 			}
-			statusLevel(logger, writer.status)(
+
+			utils.StatusLevel(logger, writer.status, utils.ServerMode)(
 				r.Context(),
 				"response",
 				log.Any("method", r.Method),
