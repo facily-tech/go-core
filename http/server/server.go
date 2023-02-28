@@ -28,7 +28,7 @@ type Config struct {
 
 // Run the server http.
 func Run(ctx context.Context, cnf Config, handler http.Handler, log ilog.Logger) {
-	server := &http.Server{Addr: cnf.Addr, Handler: handler}
+	server := &http.Server{Addr: cnf.Addr, Handler: handler, ReadHeaderTimeout: 5 * time.Second}
 
 	// Server run context.
 	serverCtx, serverStopCtx := context.WithCancel(ctx)

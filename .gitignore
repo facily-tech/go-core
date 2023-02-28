@@ -15,4 +15,5 @@
 # vendor/
 
 # bin is a protected folder, should not be versioned
-bin/ 
+bin/
+*_mock.go
