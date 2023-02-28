@@ -14,7 +14,7 @@ import (
 // ICryptography is Cryptography interface to use when you wanna make a default setup on its methods.
 //
 //nolint:lll // go generate line
-//go:generate mockgen -source=/cryptography/cryptography.go -destination=/cryptography/cryptography_mock.go -package=cryptography
+//go:generate mockgen -source=cryptography.go -destination=cryptography_mock.go -package=cryptography
 type ICryptography interface {
 	/* Encrypt returns a string with the plainText encrypted
 	   if "plainText" was a error then it will return a empty string and a error */
