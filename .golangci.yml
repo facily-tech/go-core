@@ -11,6 +11,11 @@ linters:
     - paralleltest
     - testpackage
     - wsl
+    - nosnakecase
+    - deadcode
+    - structcheck
+    - ifshort
+    - varcheck
 
 linters-settings:
   wrapcheck:
@@ -25,16 +30,10 @@ issues:
   exclude-use-default: false
   max-issues-per-linter: 0
   max-same-issues: 0
-  exclude-rules:
-    - path: _test\.go
-      linters:
-        - funlen
-        - lll
-        - dupl
-        - cyclop
 
 run:
   timeout: 1m
+  tests: false
 
 # golangci.com configuration
 # https://github.com/golangci/golangci/wiki/Configuration
