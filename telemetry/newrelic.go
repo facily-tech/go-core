@@ -67,8 +67,6 @@ func (NewRelic) Name() Name {
 }
 
 // SpanFromContext does nothing it is a mock method.
-//
-//nolint:ireturn // it will not be changed to struct to mantain compatibility
 func (relic *NewRelic) SpanFromContext(ctx context.Context) (Span, bool) {
 	tx := newrelic.FromContext(ctx)
 	if tx == nil {
@@ -82,7 +80,6 @@ type txn struct {
 	tx *newrelic.Transaction
 }
 
-//nolint:ireturn // due compatibility it will not be changed to struct.
 func (t *txn) Context() SpanContext {
 	return t
 }

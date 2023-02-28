@@ -79,8 +79,6 @@ func (DataDog) Name() Name {
 }
 
 // SpanFromContext return span from context.Context.
-//
-//nolint:ireturn // it will not be changed to struct to maintain compatibility.
 func (DataDog) SpanFromContext(ctx context.Context) (Span, bool) {
 	rawSpan, ok := tracer.SpanFromContext(ctx)
 
