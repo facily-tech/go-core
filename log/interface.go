@@ -20,12 +20,13 @@ func Error(value error) Field {
 
 // Fields are the slice of fields that are handled internaly by logger function.
 type Fields struct {
-	CTX    context.Context
+	CTX    context.Context //nolint:containedctx // sadly required
 	Fields []Field
 }
 
-//go:generate mockgen -destination logger_mock.go -package=log . Logger
 // Logger defines a common contract we should follow for each new log provider.
+//
+//go:generate mockgen -destination logger_mock.go -package=log . Logger
 type Logger interface {
 	// Error logs a message at ErrorLevel. The message includes any fields passed at the log site, as well as any
 	// fields accumulated on the logger.

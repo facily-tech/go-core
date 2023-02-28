@@ -18,6 +18,5 @@ Somewhere create a instance of MyConfig and call LoadEnv:
 	if err := LoadEnv(ctx, &config, "PREFIX_"); err != nil {
 		...
 	}
-
 */
 package env
