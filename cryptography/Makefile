@@ -3,7 +3,7 @@ lint:
 	@golangci-lint run
 
 .PHONY: test
-test:
+test: generate
 	@go test ./... -race -covermode=atomic -coverprofile=coverage.out
 
 .PHONY: generate
