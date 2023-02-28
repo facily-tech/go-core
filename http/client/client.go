@@ -89,7 +89,8 @@ func (rt *HeaderTripper) RoundTrip(r *http.Request) (*http.Response, error) {
 		return resp, errors.WithStack(err)
 	}
 	if !rt.accept(resp.StatusCode) {
-		utils.StatusLevel(rt.log, resp.StatusCode, utils.ClientMode)(r.Context(), "http response", log.Any("dump", string(dresp)))
+		utils.StatusLevel(rt.log, resp.StatusCode, utils.ClientMode)(r.Context(),
+			"http response", log.Any("dump", string(dresp)))
 	}
 
 	return resp, errors.WithStack(err)
