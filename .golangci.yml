@@ -16,6 +16,7 @@ linters:
     - structcheck
     - ifshort
     - varcheck
+    - gci
 
 linters-settings:
   wrapcheck:
