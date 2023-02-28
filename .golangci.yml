@@ -19,6 +19,7 @@ linters:
     - gci
     - exhaustruct
     - gomnd
+    - gofumpt
 
 linters-settings:
   wrapcheck:
