@@ -17,6 +17,7 @@ linters:
     - ifshort
     - varcheck
     - gci
+    - exhaustruct
 
 linters-settings:
   wrapcheck:
