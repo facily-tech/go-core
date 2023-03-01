@@ -74,7 +74,7 @@ func TestWithLogger(t *testing.T) {
 
 	})
 
-	t.Run("success, response body", func(t *testing.T) {
+	t.Run("success, response info body", func(t *testing.T) {
 		c := &http.Client{
 			Transport:     nil,
 			CheckRedirect: nil,
@@ -84,6 +84,78 @@ func TestWithLogger(t *testing.T) {
 		logMock := log.NewMockLogger(gomock.NewController(t))
 		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
 		logMock.EXPECT().Info(gomock.Any(), "http response", gomock.Any()).Times(1)
+
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) }))
+		defer srv.Close()
+
+		WithLogger(c, logMock, []string{"1.."})
+
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+		assert.NoError(t, err)
+
+		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
+		assert.NoError(t, err)
+		defer closeHelper(t, resp.Body)
+	})
+
+	t.Run("success, response warning body", func(t *testing.T) {
+		c := &http.Client{
+			Transport:     nil,
+			CheckRedirect: nil,
+			Jar:           nil,
+			Timeout:       0,
+		}
+		logMock := log.NewMockLogger(gomock.NewController(t))
+		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
+		logMock.EXPECT().Warn(gomock.Any(), "http response", gomock.Any()).Times(1)
+
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusMultipleChoices) }))
+		defer srv.Close()
+
+		WithLogger(c, logMock, []string{"2.."})
+
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+		assert.NoError(t, err)
+
+		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
+		assert.NoError(t, err)
+		defer closeHelper(t, resp.Body)
+	})
+
+	t.Run("success, response error body", func(t *testing.T) {
+		c := &http.Client{
+			Transport:     nil,
+			CheckRedirect: nil,
+			Jar:           nil,
+			Timeout:       0,
+		}
+		logMock := log.NewMockLogger(gomock.NewController(t))
+		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
+		logMock.EXPECT().Error(gomock.Any(), "http response", gomock.Any()).Times(1)
+
+		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusBadRequest) }))
+		defer srv.Close()
+
+		WithLogger(c, logMock, []string{"2.."})
+
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+		assert.NoError(t, err)
+
+		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
+		assert.NoError(t, err)
+		defer closeHelper(t, resp.Body)
+	})
+
+	t.Run("success, response error body", func(t *testing.T) {
+		c := &http.Client{
+			Transport:     nil,
+			CheckRedirect: nil,
+			Jar:           nil,
+			Timeout:       0,
+		}
+		logMock := log.NewMockLogger(gomock.NewController(t))
+		logMock.EXPECT().Info(gomock.Any(), "http request", gomock.Any()).Times(1)
+		logMock.EXPECT().Error(gomock.Any(), "http response", gomock.Any()).Times(1)
 
 		srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusInternalServerError) }))
 		defer srv.Close()

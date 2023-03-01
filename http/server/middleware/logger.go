@@ -2,12 +2,12 @@ package middleware
 
 import (
 	"bytes"
-	"context"
 	"net/http"
 	"net/http/httputil"
 	"strings"
 	"time"
 
+	utils "github.com/facily-tech/go-core/http/utils"
 	"github.com/facily-tech/go-core/log"
 	"github.com/pkg/errors"
 )
@@ -86,21 +86,6 @@ func (r *wrapWriter) WriteHeader(statusCode int) {
 	r.ResponseWriter.WriteHeader(statusCode)
 }
 
-func statusLevel(logger log.Logger, status int) func(ctx context.Context, msg string, fields ...log.Field) {
-	switch {
-	case status <= 0:
-		return logger.Warn
-	case status < http.StatusBadRequest: // for codes in 100s, 200s, 300s
-		return logger.Info
-	case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
-		return logger.Warn
-	case status >= http.StatusInternalServerError:
-		return logger.Error
-	default:
-		return logger.Info
-	}
-}
-
 // Logger middleware is a middleware to log everything request that was receved by API.
 func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
@@ -149,9 +134,9 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 					return
 				}
 			}
-			statusLevel(logger, writer.status)(
-				r.Context(),
-				"response",
+
+			utils.StatusLevel(logger, writer.status, utils.ServerMode)(
+				r.Context(), "response",
 				log.Any("method", r.Method),
 				log.Any("path", r.URL.Path),
 				log.Any("from", IP),
