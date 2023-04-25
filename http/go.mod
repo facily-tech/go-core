@@ -9,6 +9,7 @@ require (
 	github.com/facily-tech/go-core/types v0.1.1
 	github.com/go-chi/chi v1.5.4
 	github.com/go-chi/chi/v5 v5.0.8
+	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/golang/mock v1.6.0
 	github.com/google/go-querystring v1.1.0
 	github.com/pkg/errors v0.9.1
