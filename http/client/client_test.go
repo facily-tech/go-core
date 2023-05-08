@@ -90,7 +90,7 @@ func TestWithLogger(t *testing.T) {
 
 		WithLogger(c, logMock, []string{"1.."})
 
-		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL, nil)
+		req, err := http.NewRequestWithContext(context.Background(), http.MethodGet, srv.URL+"/gold", nil)
 		assert.NoError(t, err)
 
 		resp, err := c.Do(req) //nolint:bodyclose // false positive our request body is nil
