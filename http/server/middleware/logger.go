@@ -10,6 +10,7 @@ import (
 	utils "github.com/facily-tech/go-core/http/utils"
 	"github.com/facily-tech/go-core/log"
 	"github.com/pkg/errors"
+	"golang.org/x/exp/slices"
 )
 
 // DontLogBodyOnSuccess default prefix to not log response in case of success.
@@ -17,6 +18,15 @@ var DontLogBodyOnSuccess = []string{
 	"/swagger",
 	"/metrics",
 	"/health",
+}
+
+// ContentTypeToLogBody is a list of content-type that the body will be logged.
+var ContentTypeToLogBody = []string{
+	"application/json",
+	"application/xml",
+	"text/json",
+	"text/xml",
+	"text/plain",
 }
 
 // wrapWriter implements http.ResponseWriter and saves status and size for logging.
@@ -114,11 +124,16 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 				copy(r.Header["Authorization"], authBkp)
 			}
 
+			reqBodyLog := r.Header.Get("Content-Type")
+			if slices.Index(ContentTypeToLogBody, reqBodyLog) > 0 {
+				reqBodyLog = string(reqbody)
+			}
+
 			logger.Info(r.Context(), "request",
 				log.Any("method", r.Method),
 				log.Any("path", r.URL.Path),
 				log.Any("from", r.RemoteAddr),
-				log.Any("body", string(reqbody)),
+				log.Any("body", reqBodyLog),
 			)
 
 			next.ServeHTTP(writer, r)
@@ -135,6 +150,11 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 				}
 			}
 
+			resBodyLog := writer.ResponseWriter.Header().Get("Content-Type")
+			if slices.Index(ContentTypeToLogBody, resBodyLog) > 0 {
+				resBodyLog = writer.bodyBuffer.String()
+			}
+
 			utils.StatusLevel(logger, writer.status, utils.ServerMode)(
 				r.Context(), "response",
 				log.Any("method", r.Method),
@@ -144,7 +164,7 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 				log.Any("size_bytes", writer.size),
 				log.Any("elapsed_seconds", time.Since(tt).Seconds()),
 				log.Any("elapsed", time.Since(tt).String()),
-				log.Any("body", writer.bodyBuffer.String()),
+				log.Any("body", resBodyLog),
 			)
 		})
 	}
