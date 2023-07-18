@@ -135,3 +135,22 @@ func (mr *MockLoggerMockRecorder) Warn(arg0, arg1 interface{}, arg2 ...interface
 	varargs := append([]interface{}{arg0, arg1}, arg2...)
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Warn", reflect.TypeOf((*MockLogger)(nil).Warn), varargs...)
 }
+
+// With mocks base method.
+func (m *MockLogger) With(arg0 context.Context, arg1 ...Field) Logger {
+	m.ctrl.T.Helper()
+	varargs := []interface{}{arg0}
+	for _, a := range arg1 {
+		varargs = append(varargs, a)
+	}
+	ret := m.ctrl.Call(m, "With", varargs...)
+	ret0, _ := ret[0].(Logger)
+	return ret0
+}
+
+// With indicates an expected call of With.
+func (mr *MockLoggerMockRecorder) With(arg0 interface{}, arg1 ...interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	varargs := append([]interface{}{arg0}, arg1...)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "With", reflect.TypeOf((*MockLogger)(nil).With), varargs...)
+}
