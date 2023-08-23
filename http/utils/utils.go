@@ -30,7 +30,7 @@ func StatusLevel(logger log.Logger, status int, mode ModeEnum) func(ctx context.
 
 		return logger.Info
 	case status >= http.StatusBadRequest && status < http.StatusInternalServerError:
-		if mode == ClientMode {
+		if mode == ClientMode && status != http.StatusNotFound {
 			return logger.Error
 		}
 
