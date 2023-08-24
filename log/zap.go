@@ -110,3 +110,11 @@ func (z *Zap) Panic(ctx context.Context, msg string, fields ...Field) {
 func (z *Zap) Warn(ctx context.Context, msg string, fields ...Field) {
 	z.logger.Warn(msg, fieldsToZap(ctx, z.tracer, fields)...)
 }
+
+// With create a new instance of Logger using fields.
+func (z *Zap) With(ctx context.Context, fields ...Field) Logger {
+	return &Zap{
+		logger: z.logger.With(fieldsToZap(ctx, z.tracer, fields)...),
+		tracer: z.tracer,
+	}
+}

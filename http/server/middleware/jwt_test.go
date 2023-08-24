@@ -59,7 +59,7 @@ func TestJWTConfig_JWTMW(t *testing.T) {
 
 			w := httptest.NewRecorder()
 			r := httptest.NewRequest(http.MethodGet, "/", nil)
-			r.Header.Add("authorization", "Bearer "+"eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2ZhY2kubHkiLCJpYXQiOjE2NzU0MDAzNDgsIm5iZiI6MTY3NTQwMDM0OCwiZXhwIjoxNjgzNzgxMTQ4LCJkYXRhIjp7InVzZXIiOnsiaWQiOiI1ODExMzA4In19fQ.e8HoV5Oj-WbVhSsrqiHW8lJWB5XWhIiXCk4GxpU06hs")
+			r.Header.Add("authorization", "Bearer "+"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjp7InVzZXIiOnsiaWQiOiI1ODExMzA4In19LCJpc3MiOiJodHRwczovL2ZhY2kubHkiLCJleHAiOjE4NDc3MzgzODIsIm5iZiI6MTY4NzI5MzU4MiwiaWF0IjoxNjg3MjkzNTgyfQ.ZB35KA_yJjbpHaR7EcZyugb7N9dpYJ5Es2axV92Ov5E")
 
 			j.JWTMW(tt.args.next).ServeHTTP(w, r)
 

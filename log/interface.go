@@ -47,4 +47,6 @@ type Logger interface {
 	// Warn logs a message at WarnLevel. The message includes any fields passed at the log site, as well as any fields
 	// accumulated on the logger.
 	Warn(ctx context.Context, msg string, fields ...Field)
+	// With create a new instance of Logger using fields.
+	With(ctx context.Context, fields ...Field) Logger
 }
