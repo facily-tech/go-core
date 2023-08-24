@@ -15,6 +15,7 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/stretchr/testify v1.8.1
 	github.com/swaggo/http-swagger v1.3.4
+	golang.org/x/exp v0.0.0-20230522175609-2e198f4a06a1
 )
 
 require (
