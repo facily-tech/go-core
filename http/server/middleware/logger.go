@@ -124,25 +124,14 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 				copy(r.Header["Authorization"], authBkp)
 			}
 
-			reqBodyLog := r.Header.Get("Content-Type")
-			if slices.Index(ContentTypeToLogBody, reqBodyLog) > 0 {
-				reqBodyLog = string(reqbody)
-			}
-
 			logger.Info(r.Context(), "request",
 				log.Any("method", r.Method),
 				log.Any("path", r.URL.Path),
-				log.Any("from", r.RemoteAddr),
-				log.Any("body", reqBodyLog),
+				log.Any("from", getIP(r)),
+				log.Any("body", getBodyAsString(r.Header.Get("Content-Type"), reqbody)),
 			)
 
 			next.ServeHTTP(writer, r)
-
-			IP := r.RemoteAddr
-			// try to get ip from reverse proxy header
-			if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
-				IP = ip
-			}
 
 			for _, v := range DontLogBodyOnSuccess {
 				if strings.HasPrefix(r.URL.Path, v) && writer.status < http.StatusBadRequest {
@@ -150,16 +139,16 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 				}
 			}
 
-			resBodyLog := writer.ResponseWriter.Header().Get("Content-Type")
-			if slices.Index(ContentTypeToLogBody, resBodyLog) > 0 {
-				resBodyLog = writer.bodyBuffer.String()
-			}
+			resBodyLog := getBodyAsString(
+				writer.ResponseWriter.Header().Get("Content-Type"),
+				writer.bodyBuffer.Bytes(),
+			)
 
 			utils.StatusLevel(logger, writer.status, utils.ServerMode)(
 				r.Context(), "response",
 				log.Any("method", r.Method),
 				log.Any("path", r.URL.Path),
-				log.Any("from", IP),
+				log.Any("from", getIP(r)),
 				log.Any("status", writer.status),
 				log.Any("size_bytes", writer.size),
 				log.Any("elapsed_seconds", time.Since(tt).Seconds()),
@@ -168,4 +157,24 @@ func Logger(logger log.Logger) func(next http.Handler) http.Handler {
 			)
 		})
 	}
+}
+
+// getIP returns the IP of the request.
+func getIP(r *http.Request) string {
+	IP := r.RemoteAddr
+	// try to get ip from reverse proxy header
+	if ip := r.Header.Get("X-Forwarded-For"); ip != "" {
+		IP = ip
+	}
+
+	return IP
+}
+
+// getBodyAsString returns the body as string if the content-type is in the list of ContentTypeToLogBody.
+func getBodyAsString(contentTpe string, body []byte) string {
+	if len(contentTpe) == 0 || slices.Index(ContentTypeToLogBody, contentTpe) > 0 {
+		return string(body)
+	}
+
+	return "***"
 }
