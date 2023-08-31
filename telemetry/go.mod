@@ -3,6 +3,8 @@ module github.com/facily-tech/go-core/telemetry
 go 1.17
 
 require (
+	github.com/carlmjohnson/versioninfo v0.22.5
+	github.com/facily-tech/go-core/env v0.1.0
 	github.com/newrelic/go-agent/v3 v3.15.1
 	github.com/pkg/errors v0.9.1
 	gopkg.in/DataDog/dd-trace-go.v1 v1.38.1
@@ -24,6 +26,7 @@ require (
 	github.com/google/pprof v0.0.0-20210423192551-a2663126120b // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/philhofer/fwd v1.1.1 // indirect
+	github.com/sethvargo/go-envconfig v0.3.5 // indirect
 	github.com/tinylib/msgp v1.1.6 // indirect
 	golang.org/x/net v0.0.0-20211020060615-d418f374d309 // indirect
 	golang.org/x/sys v0.0.0-20220503163025-988cb79eb6c6 // indirect
