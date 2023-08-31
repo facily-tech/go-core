@@ -37,7 +37,7 @@ type config struct {
 	MaxOpenConn          int           `env:"MAX_OPEN,default=10"`
 	MaxIdleTime          time.Duration `env:"MAX_IDLE_DURATION,default=3m"`
 	TracerDatadogEnabled bool          `env:"TRACER_DATADOG_ENABLED,default=false"`
-	TracerServiceName    string        `env:"TRACE_SERVICE_NAME,default=database"`
+	TracerServiceName    string        `env:"TRACER_SERVICE_NAME,default=database"`
 }
 
 // InitDB initializes a new database connection.
