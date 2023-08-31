@@ -52,7 +52,6 @@ func InitDB(database database) (*gorm.DB, *sql.DB, error) {
 
 // open opens a new database connection.
 func open(database database, config config) (*gorm.DB, *sql.DB, error) {
-
 	datasource := config.DSN
 	if len(config.DSNTest) > 0 {
 		datasource = config.DSNTest
@@ -67,12 +66,12 @@ func open(database database, config config) (*gorm.DB, *sql.DB, error) {
 		sqltrace.Register(driverName, &stdlib.Driver{}, sqltrace.WithServiceName(config.TracerServiceName))
 		sqlDB, err = sqltrace.Open(driverName, datasource)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, errors.Wrap(err, "cannot open database connection with datadog tracer")
 		}
 	} else {
 		sqlDB, err = sql.Open(driverName, datasource)
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, errors.Wrap(err, "cannot open database connection without tracer")
 		}
 	}
 
@@ -81,7 +80,7 @@ func open(database database, config config) (*gorm.DB, *sql.DB, error) {
 
 	db, err := gormtrace.Open(postgres.New(postgres.Config{Conn: sqlDB}), &gorm.Config{})
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, errors.Wrap(err, "cannot open a gorm connection")
 	}
 
 	return db, sqlDB, nil
