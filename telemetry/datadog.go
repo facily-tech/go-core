@@ -4,6 +4,8 @@ import (
 	"context"
 	"net/http"
 
+	"github.com/carlmjohnson/versioninfo"
+	"github.com/facily-tech/go-core/env"
 	"github.com/pkg/errors"
 	ddchi "gopkg.in/DataDog/dd-trace-go.v1/contrib/go-chi/chi.v5"
 	ddhttp "gopkg.in/DataDog/dd-trace-go.v1/contrib/net/http"
@@ -39,8 +41,22 @@ type DataDogConfig struct {
 	WithProfiler bool `env:"WITH_PROFILER"`
 }
 
-// NewDataDog returns a new Datadog implementation.
-func NewDataDog(config DataDogConfig) (*DataDog, error) {
+// NewDatadog returns a new Datadog implementation.
+func NewDatadog() (*DataDog, error) {
+	var c DataDogConfig
+	if err := env.LoadEnv(context.Background(), &c, DataDogConfigPrefix); err != nil {
+		return nil, err
+	}
+
+	if c.Version == "" {
+		c.Version = versioninfo.Version
+	}
+
+	return newDatadog(c)
+}
+
+// NewDatadog returns a new Datadog implementation.
+func newDatadog(config DataDogConfig) (*DataDog, error) {
 	tracer.Start([]tracer.StartOption{
 		tracer.WithEnv(config.Env),
 		tracer.WithService(config.Service),
