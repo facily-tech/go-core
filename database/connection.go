@@ -50,18 +50,22 @@ type config struct {
 	TracerDatadogEnabled bool          `env:"TRACER_DATADOG_ENABLED,default=false"`
 }
 
+// InitDB initializes a new database connection.
 func InitDB(database database) (*gorm.DB, *sql.DB, error) {
 	return initDB(database, DBPrefix)
 }
 
+// InitDBWithPrefix initializes a new database connection with a prefix.
 func InitDBWithPrefix(database database, dbPrefix string) (*gorm.DB, *sql.DB, error) {
 	return initDB(database, dbPrefix)
 }
 
+// InitMongoDB initializes a new mongo database connection.
 func InitMongoDB() (*mongo.Client, error) {
 	return initMongoDB(DBPrefix)
 }
 
+// InitMongoDBWithPrefix initializes a new mongo database connection with a prefix.
 func InitMongoDBWithPrefix(dbPrefix string) (*mongo.Client, error) {
 	return initMongoDB(dbPrefix)
 }
@@ -95,7 +99,12 @@ func openMongoConn(dbConfig *config) (*mongo.Client, error) {
 	maxPoolSize := uint64(dbConfig.MaxOpenConn)
 	opts.MaxPoolSize = &maxPoolSize
 
-	return mongo.Connect(context.Background(), opts)
+	client, err := mongo.Connect(context.Background(), opts)
+	if err != nil {
+		return nil, errors.Wrap(err, "cannot open mongo connection")
+	}
+
+	return client, nil
 }
 
 // InitDB initializes a new database connection.
