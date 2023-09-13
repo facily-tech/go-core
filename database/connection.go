@@ -71,12 +71,12 @@ func InitMongoDBWithPrefix(dbPrefix string) (*mongo.Client, error) {
 }
 
 func loadEnv(dbPrefix string) (*config, error) {
-	var dbConfig *config
+	var dbConfig config
 	if err := env.LoadEnv(context.Background(), &dbConfig, dbPrefix); err != nil {
 		return nil, errors.Wrap(err, "cannot load db environment variable")
 	}
 
-	return dbConfig, nil
+	return &dbConfig, nil
 }
 
 // InitMongoDB initializes a new mongo database connection.
