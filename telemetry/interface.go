@@ -23,6 +23,8 @@ type Tracer interface {
 	Name() Name
 	// Get SpanFromContext given
 	SpanFromContext(ctx context.Context) (Span, bool)
+	// StartSpanForCommand start a new span for a command.
+	StartSpanForCommand(ctx context.Context, action string, resolver Command)
 }
 
 // Span interface handle span usage.

@@ -27,6 +27,15 @@ var _ Tracer = (*DataDog)(nil)
 // DataDog implements Tracer.
 type DataDog struct{}
 
+// Command is a callback function to be implemented with block segment that should be covered.
+type Command func(ctx context.Context) []CommandResultParam
+
+// CommandResultParam are the metrics to be attached as span's attributes.
+type CommandResultParam struct {
+	Key   string
+	Value interface{}
+}
+
 // DataDogConfig is the struct of config given to NewDataDog.
 type DataDogConfig struct {
 	Env     string `env:"ENV,required"`
@@ -110,6 +119,17 @@ func (DataDog) SpanFromContext(ctx context.Context) (Span, bool) {
 			spanID:  rawContext.SpanID(),
 		},
 	}, true
+}
+
+// StartSpanForCommand start a new span for a command.
+func (DataDog) StartSpanForCommand(ctx context.Context, action string, resolver Command) {
+	span, ctx := tracer.StartSpanFromContext(ctx, action)
+	defer span.Finish()
+
+	params := resolver(ctx)
+	for _, param := range params {
+		span.SetTag(param.Key, param.Value)
+	}
 }
 
 // Client receive *http.Client and return a *http.Client with datadog tracer wrapped in it.
