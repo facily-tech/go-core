@@ -76,6 +76,20 @@ func (relic *NewRelic) SpanFromContext(ctx context.Context) (Span, bool) {
 	return &txn{tx}, true
 }
 
+// StartSpanForCommand start a new span for a command.
+func (*NewRelic) StartSpanForCommand(ctx context.Context, action string, resolver Command) {
+	tx := newrelic.FromContext(ctx)
+	if tx == nil {
+		return
+	}
+	tx.SetName(action)
+
+	params := resolver(ctx)
+	for _, param := range params {
+		tx.AddAttribute(param.Key, param.Value)
+	}
+}
+
 type txn struct {
 	tx *newrelic.Transaction
 }
