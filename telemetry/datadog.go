@@ -49,7 +49,7 @@ func NewDatadog() (*DataDog, error) {
 	}
 
 	if c.Version == "" {
-		c.Version = versioninfo.Version
+		c.Version = versioninfo.Revision
 	}
 
 	return newDatadog(c)
