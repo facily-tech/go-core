@@ -27,10 +27,10 @@ var _ Tracer = (*DataDog)(nil)
 // DataDog implements Tracer.
 type DataDog struct{}
 
-// Command is a callback function to be implemented with block segment that should be covered
+// Command is a callback function to be implemented with block segment that should be covered.
 type Command func(ctx context.Context) []CommandResultParam
 
-// CommandResultParam are the metrics to be attached as span's attributes
+// CommandResultParam are the metrics to be attached as span's attributes.
 type CommandResultParam struct {
 	Key   string
 	Value interface{}
