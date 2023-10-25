@@ -7,12 +7,14 @@ import (
 
 	mysqldriver "github.com/go-sql-driver/mysql"
 	sqltrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/database/sql"
+	redistrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/go-redis/redis"
 	mongotrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/go.mongodb.org/mongo-driver/mongo"
 	gormtrace "gopkg.in/DataDog/dd-trace-go.v1/contrib/gorm.io/gorm.v1"
 
 	"github.com/facily-tech/go-core/env"
 	"github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
+	"github.com/redis/go-redis"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"gorm.io/driver/mysql"
@@ -23,6 +25,8 @@ import (
 const (
 	// DBPrefix is the prefix for all environment variables related to the database.
 	DBPrefix = "DB_"
+	// CachePrefix is the prefix for all environment variables related to the cache.
+	CachePrefix = "CACHE_"
 	// PostgresDriverName is the name of the postgres driver.
 	PostgresDriverName = "pgx"
 	// MySQLDriverName is the name of the mysql driver.
@@ -68,6 +72,16 @@ func InitMongoDB() (*mongo.Client, error) {
 // InitMongoDBWithPrefix initializes a new mongo database connection with a prefix.
 func InitMongoDBWithPrefix(dbPrefix string) (*mongo.Client, error) {
 	return initMongoDB(dbPrefix)
+}
+
+// InitCache initializes a new redis cache connection.
+func InitCache() (*redis.Client, error) {
+	return initCache(CachePrefix)
+}
+
+// InitCacheWithPrefix initializes a new redis cache connection with a prefix.
+func InitCacheWithPrefix(cachePrefix string) (*redis.Client, error) {
+	return initMongoDB(cachePrefix)
 }
 
 func loadEnv(dbPrefix string) (*config, error) {
@@ -159,4 +173,33 @@ func open(database database, config *config) (*gorm.DB, *sql.DB, error) {
 	}
 
 	return db, sqlDB, nil
+}
+
+// InitCache initializes a new redis cache connection.
+func initCache(cachePrefix string) (*redis.Client, error) {
+	dbConfig, err := loadEnv(cachePrefix)
+	if err != nil {
+		return nil, err
+	}
+
+	return openCacheConn(dbConfig)
+}
+
+// openCacheConn opens a new redis cache connection.
+func openCacheConn(dbConfig *config) (*redis.Client, error) {
+	opts := &redis.Options{
+		Addr: dbConfig.DSN,
+		DB:   dbConfig.MaxOpenConn,
+	}
+	rdb := redistrace.NewClient(opts)
+	rdb = rdb.WithContext(context.Background())
+
+	timeout, c := context.WithTimeout(context.Background(), time.Minute)
+	defer c()
+	if err := rdb.Ping(timeout).Err(); err != nil {
+
+		return nil, errors.Wrap(err, "cannot ping redis")
+	}
+
+	return &rdb, nil
 }

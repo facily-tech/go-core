@@ -24,6 +24,7 @@ require (
 	github.com/DataDog/sketches-go v1.2.1 // indirect
 	github.com/Microsoft/go-winio v0.5.2 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
+	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/ebitengine/purego v0.5.0-alpha // indirect
 	github.com/go-stack/stack v1.8.0 // indirect
@@ -36,6 +37,7 @@ require (
 	github.com/klauspost/compress v1.16.3 // indirect
 	github.com/outcaste-io/ristretto v0.2.1 // indirect
 	github.com/philhofer/fwd v1.1.2 // indirect
+	github.com/redis/go-redis/v9 v9.2.1 // indirect
 	github.com/rogpeppe/go-internal v1.11.0 // indirect
 	github.com/secure-systems-lab/go-securesystemslib v0.7.0 // indirect
 	github.com/sethvargo/go-envconfig v0.3.5 // indirect
