@@ -51,13 +51,13 @@ type config struct {
 }
 
 // InitDB initializes a new database connection.
-func InitDB(database database) (*gorm.DB, *sql.DB, error) {
-	return initDB(database, DBPrefix)
+func InitDB(database database, gormConfig *gorm.Config) (*gorm.DB, *sql.DB, error) {
+	return initDB(database, gormConfig, DBPrefix)
 }
 
 // InitDBWithPrefix initializes a new database connection with a prefix.
-func InitDBWithPrefix(database database, dbPrefix string) (*gorm.DB, *sql.DB, error) {
-	return initDB(database, dbPrefix)
+func InitDBWithPrefix(database database, gormConfig *gorm.Config, dbPrefix string) (*gorm.DB, *sql.DB, error) {
+	return initDB(database, gormConfig, dbPrefix)
 }
 
 // InitMongoDB initializes a new mongo database connection.
@@ -108,17 +108,17 @@ func openMongoConn(dbConfig *config) (*mongo.Client, error) {
 }
 
 // InitDB initializes a new database connection.
-func initDB(database database, dbPrefix string) (*gorm.DB, *sql.DB, error) {
+func initDB(database database, gormConfig *gorm.Config, dbPrefix string) (*gorm.DB, *sql.DB, error) {
 	dbConfig, err := loadEnv(dbPrefix)
 	if err != nil {
 		return nil, nil, err
 	}
 
-	return open(database, dbConfig)
+	return open(database, gormConfig, dbConfig)
 }
 
 // open opens a new database connection.
-func open(database database, config *config) (*gorm.DB, *sql.DB, error) {
+func open(database database, gormConfig *gorm.Config, config *config) (*gorm.DB, *sql.DB, error) {
 	datasource := config.DSN
 	if len(config.DSNTest) > 0 {
 		datasource = config.DSNTest
@@ -153,7 +153,7 @@ func open(database database, config *config) (*gorm.DB, *sql.DB, error) {
 		dialector = mysql.New(mysql.Config{Conn: sqlDB})
 	}
 
-	db, err := gormtrace.Open(dialector, &gorm.Config{})
+	db, err := gormtrace.Open(dialector, gormConfig)
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "cannot open a gorm connection")
 	}
