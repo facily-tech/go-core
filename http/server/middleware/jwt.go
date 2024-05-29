@@ -63,7 +63,7 @@ func (j JWTConfig) JWTMW(next http.Handler) http.Handler {
 		})
 		if err != nil {
 			http.Error(w, `{"message": "token isn't valid: `+err.Error()+`"}`, http.StatusUnauthorized)
-        
+			
 			return
 		}
 
