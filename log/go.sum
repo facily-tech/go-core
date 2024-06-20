@@ -4,7 +4,6 @@ github.com/DataDog/datadog-agent/pkg/obfuscate v0.46.0 h1:rUNnUcHC4AlxoImuXmZeOf
 github.com/DataDog/datadog-agent/pkg/obfuscate v0.46.0/go.mod h1:e933RWa4kAWuHi5jpzEuOiULlv21HcCFEVIYegmaB5c=
 github.com/DataDog/datadog-agent/pkg/remoteconfig/state v0.46.0 h1:BaGNyBJy7hLgbxGwGVNhuvl9FA3d5NhQqM+7Qso3XzI=
 github.com/DataDog/datadog-agent/pkg/remoteconfig/state v0.46.0/go.mod h1:VVMDDibJxYEkwcLdZBT2g8EHKpbMT4JdOhRbQ9GdjbM=
-github.com/DataDog/datadog-go v4.8.3+incompatible h1:fNGaYSuObuQb5nzeTQqowRAd9bpDIRRV4/gUtIBjh8Q=
 github.com/DataDog/datadog-go/v5 v5.1.1/go.mod h1:KhiYb2Badlv9/rofz+OznKoEF5XKTonWyhx5K83AP8E=
 github.com/DataDog/datadog-go/v5 v5.3.0 h1:2q2qjFOb3RwAZNU+ez27ZVDwErJv5/VpbBPprz7Z+s8=
 github.com/DataDog/datadog-go/v5 v5.3.0/go.mod h1:XRDJk1pTc00gm+ZDiBKsjh7oOOtJfYfglVCmFb8C2+Q=
@@ -239,8 +238,8 @@ golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 h1:H2TDz8ibqkAF6YGhCdN3j
 golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2/go.mod h1:K8+ghG5WaK9qNqU5K3HdILfMLy1f3aNYFI/wnl100a8=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230717213848-3f92550aa753 h1:XUODHrpzJEUeWmVo/jfNTLj0YyVveOo28oE6vkFbkO4=
 google.golang.org/genproto/googleapis/rpc v0.0.0-20230717213848-3f92550aa753/go.mod h1:TUfxEVdsvPg18p6AslUXFoLdpED4oBnGwyqk3dV1XzM=
-google.golang.org/grpc v1.56.2 h1:fVRFRnXvU+x6C4IlHZewvJOVHoOv1TUuQyoRsYnB4bI=
-google.golang.org/grpc v1.56.2/go.mod h1:I9bI3vqKfayGqPUAwGdOSu7kt6oIJLixfffKrpXqQ9s=
+google.golang.org/grpc v1.56.3 h1:8I4C0Yq1EjstUzUJzpcRVbuYA2mODtEmpWiQoN/b2nc=
+google.golang.org/grpc v1.56.3/go.mod h1:I9bI3vqKfayGqPUAwGdOSu7kt6oIJLixfffKrpXqQ9s=
 google.golang.org/protobuf v0.0.0-20200109180630-ec00e32a8dfd/go.mod h1:DFci5gLYBciE7Vtevhsrf46CRTquxDuWsQurQQe4oz8=
 google.golang.org/protobuf v0.0.0-20200221191635-4d8936d0db64/go.mod h1:kwYJMbMJ01Woi6D6+Kah6886xMZcty6N08ah7+eCXa0=
 google.golang.org/protobuf v0.0.0-20200228230310-ab0ca4ff8a60/go.mod h1:cfTl7dwQJ+fmap5saPgwCLgHXTUD7jkjRqWcaiX5VyM=
